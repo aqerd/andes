@@ -25,7 +25,8 @@
       "helloGo": [
         {
           "id": "helloGoView",
-          "name": "Hello Go"
+          "name": "Hello Go",
+          "type": "webview"
         }
       ]
     },

@@ -1,6 +1,9 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import * as path from 'path';
+import { promisify } from 'util';
+
+const execFile = promisify(cp.execFile);
 
 class HelloGoViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'helloGoView';
@@ -21,11 +24,13 @@ class HelloGoViewProvider implements vscode.WebviewViewProvider {
                     const exe = this.context.asAbsolutePath(
                         path.join('bin', process.platform === 'win32' ? 'ollama-chat.exe' : 'ollama-chat')
                     );
-                    const result = await cp.execFile(exe, [message.prompt], { encoding: 'utf8' });
-                    const output = result.stdout ? result.stdout.toString().trim() : '';
+                    const result = await execFile(exe, [message.prompt], { encoding: 'utf8' });
+
+                    const output = result.stdout ? result.stdout.trim() : '';
                     webviewView.webview.postMessage({ type: 'result', ok: true, text: output });
-                } catch (err: unknown) {
-                    const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+
+                } catch (err: any) {
+                    const errorMessage = err.stderr || (err instanceof Error ? err.message : 'An unknown error occurred');
                     webviewView.webview.postMessage({ type: 'result', ok: false, error: errorMessage });
                 }
             }
@@ -45,7 +50,7 @@ class HelloGoViewProvider implements vscode.WebviewViewProvider {
       </head>
       <body>
         <div style="display:flex; flex-direction:column; height:100%">
-        <p>2</p>
+        <p>3</p> 
           <div id="messages" style="flex:1; overflow:auto; white-space:pre-wrap; padding: 10px;"></div>
           <div style="display:flex; padding: 10px;">
             <textarea id="input" style="flex:1; padding: 5px; margin-right: 10px; height: 40px;"></textarea>
@@ -62,7 +67,7 @@ class HelloGoViewProvider implements vscode.WebviewViewProvider {
             const text = input.value.trim();
             if (!text) return;
             
-            messages.textContent += 'You: ' + text + '\\n';
+            messages.textContent += 'You: ' + text + '\\n\\n';
             input.value = '';
             
             vscode.postMessage({ type: 'chat', prompt: text });
@@ -71,7 +76,7 @@ class HelloGoViewProvider implements vscode.WebviewViewProvider {
           window.addEventListener('message', event => {
             const msg = event.data;
             if (msg.type === 'result') {
-              messages.textContent += 'AI: ' + (msg.ok ? msg.text : 'Error: ' + msg.error) + '\\n';
+              messages.textContent += 'AI: ' + (msg.ok ? msg.text : 'Error: ' + msg.error) + '\\n\\n';
             }
           });
         </script>

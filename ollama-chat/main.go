@@ -11,14 +11,19 @@ import (
     "strings"
 )
 
-type generateRequest struct {
+type chatRequest struct {
     Model  string `json:"model"`
-    Prompt string `json:"prompt"`
-    Stream bool   `json:"stream"`
+    Messages []struct {
+        Role    string `json:"role"`
+        Content string `json:"content"`
+    } `json:"messages"`
+    Stream bool `json:"stream"`
 }
 
-type generateResponse struct {
-    Response string `json:"response"`
+type chatResponse struct {
+    Message struct {
+        Content string `json:"content"`
+    } `json:"message"`
 }
 
 func main() {
@@ -35,9 +40,19 @@ func main() {
         os.Exit(1)
     }
 
-    reqBody := generateRequest{Model: *model, Prompt: prompt, Stream: false}
+    reqBody := chatRequest{
+        Model: *model,
+        Messages: []struct {
+            Role    string `json:"role"`
+            Content string `json:"content"`
+        }{{
+            Role: "user",
+            Content: prompt,
+        }},
+        Stream: false,
+    }
     bodyBytes, _ := json.Marshal(reqBody)
-    resp, err := http.Post("http://localhost:11434/api/generate", "application/json", bytes.NewReader(bodyBytes))
+    resp, err := http.Post("http://localhost:11434/api/chat", "application/json", bytes.NewReader(bodyBytes))
     if err != nil {
         fmt.Fprintln(os.Stderr, "request error:", err)
         os.Exit(1)
@@ -47,10 +62,10 @@ func main() {
         io.Copy(os.Stderr, resp.Body)
         os.Exit(1)
     }
-    var out generateResponse
+    var out chatResponse
     if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
         fmt.Fprintln(os.Stderr, "decode error:", err)
         os.Exit(1)
     }
-    fmt.Print(out.Response)
+    fmt.Print(out.Message.Content)
 }

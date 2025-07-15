@@ -16,12 +16,10 @@ class HelloGoViewProvider implements vscode.WebviewViewProvider {
     webviewView.webview.html = this.getHtml(webviewView.webview);
 
     webviewView.webview.onDidReceiveMessage((message) => {
-      if (message.type === 'run') {
+      if (message.type === 'chat') {
         const exe = this.context.asAbsolutePath(
-          path.join('bin', process.platform === 'win32' ? 'hello-go.exe' : 'hello-go')
+          path.join('bin', process.platform === 'win32' ? 'ollama-chat.exe' : 'ollama-chat')
         );
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // @ts-ignore: execFile overload error suppression
         (cp.execFile as any)(exe, { encoding: 'utf8' }, (err: NodeJS.ErrnoException | null, stdout: string, stderr: string) => {
           if (err) {
             webviewView.webview.postMessage({ type: 'result', ok: false, error: stderr || err?.message });
@@ -35,7 +33,7 @@ class HelloGoViewProvider implements vscode.WebviewViewProvider {
 
   private getHtml(webview: vscode.Webview): string {
     const nonce = getNonce();
-    return /* html */`<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -44,15 +42,29 @@ class HelloGoViewProvider implements vscode.WebviewViewProvider {
   <title>Hello Go</title>
 </head>
 <body>
-  <button id="run">Run Go</button>
-  <pre id="out"></pre>
+  <div style="display:flex; flex-direction:column; height:100%">
+    <div id="messages" style="flex:1; overflow:auto; white-space:pre-wrap"></div>
+    <div style="display:flex">
+      <textarea id="input" style="flex:1"></textarea>
+      <button id="send">Send</button>
+    </div>
+  </div>
   <script nonce="${nonce}">
     const vscode = acquireVsCodeApi();
-    document.getElementById('run').addEventListener('click', () => vscode.postMessage({ type: 'run' }));
+    const input = document.getElementById('input');
+    const messages = document.getElementById('messages');
+    document.getElementById('send').addEventListener('click', () => {
+      const text = (input as HTMLTextAreaElement).value;
+      if (!text.trim()) { return; }
+      messages.textContent += 'You: ' + text + '\n';
+      (input as HTMLTextAreaElement).value = '';
+      vscode.postMessage({ type: 'chat', prompt: text });
+    });
     window.addEventListener('message', event => {
       const msg = event.data;
       if (msg.type === 'result') {
-        document.getElementById('out').textContent = msg.ok ? msg.text : 'Error: ' + msg.error;
+        messages.textContent += 'AI: ' + msg.text + '\n';
+        
       }
     });
   </script>
@@ -66,15 +78,13 @@ function getNonce() {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    // Register the sidebar view provider
     const provider = new HelloGoViewProvider(context);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(HelloGoViewProvider.viewType, provider)
     );
 
-    // Keep the original command but just show info on how to access the sidebar
     const disposable = vscode.commands.registerCommand('helloGo.hello', () => {
-        vscode.window.showInformationMessage('Open the Hello Go sidebar from the activity bar icon.');
+        vscode.window.showInformationMessage('... Open the Hello Go sidebar from the activity bar icon.');
     });
     context.subscriptions.push(disposable);
 }

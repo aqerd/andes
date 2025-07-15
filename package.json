@@ -9,9 +9,26 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": ["onCommand:helloGo.hello"],
+  "activationEvents": ["onCommand:helloGo.hello", "onView:helloGoView"],
   "main": "./dist/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "helloGo",
+          "title": "Hello Go",
+          "icon": "./media/hello.svg"
+        }
+      ]
+    },
+    "views": {
+      "helloGo": [
+        {
+          "id": "helloGoView",
+          "name": "Hello Go"
+        }
+      ]
+    },
     "commands": [
       { "command": "helloGo.hello", "title": "Hello Go" }
     ]

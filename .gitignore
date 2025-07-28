@@ -3,5 +3,7 @@ dist
 node_modules
 .vscode-test/
 *.vsix
-bin/
-.vscode/
+bin/*
+internal
+cmd
+go.mod

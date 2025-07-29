@@ -1,11 +1,8 @@
 import * as vscode from 'vscode';
 import { AndesViewProvider } from './AndesViewProvider';
 
-export function activate(context: vscode.ExtensionContext) {
-
-    console.log('Congratulations, your extension "andes" is now active!');
-
-    const provider = new AndesViewProvider(context);
+export async function activate(context: vscode.ExtensionContext) {
+    const provider = await AndesViewProvider.create(context);
 
     const viewProviderRegistration = vscode.window.registerWebviewViewProvider(
         AndesViewProvider.viewType,

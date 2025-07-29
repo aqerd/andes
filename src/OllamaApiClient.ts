@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+import type { RequestInfo, RequestInit, Response } from 'node-fetch';
 
 export interface OllamaModel {
     name: string;
@@ -15,15 +15,24 @@ interface OllamaGenerateResponse {
     done: boolean;
 }
 
+type FetchFunction = (url: RequestInfo, init?: RequestInit) => Promise<Response>;
+
 export class OllamaApiClient {
     private readonly baseUrl: string;
+    private readonly fetch: FetchFunction;
 
-    constructor(baseUrl: string = 'http://localhost:11434') {
+    private constructor(baseUrl: string, fetch: FetchFunction) {
         this.baseUrl = baseUrl;
+        this.fetch = fetch;
+    }
+
+    public static async create(baseUrl: string = 'http://localhost:11434'): Promise<OllamaApiClient> {
+        const { default: fetch } = await import('node-fetch');
+        return new OllamaApiClient(baseUrl, fetch);
     }
 
     public async listModels(): Promise<OllamaModel[]> {
-        const response = await fetch(`${this.baseUrl}/api/tags`);
+        const response = await this.fetch(`${this.baseUrl}/api/tags`);
         if (!response.ok) {
             throw new Error(`Failed to fetch models: ${response.statusText}`);
         }
@@ -32,7 +41,7 @@ export class OllamaApiClient {
     }
 
     public async generate(prompt: string, model: string): Promise<string> {
-        const response = await fetch(`${this.baseUrl}/api/generate`, {
+        const response = await this.fetch(`${this.baseUrl}/api/generate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

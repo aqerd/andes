@@ -1,17 +1,17 @@
 {
   "name": "andes",
   "displayName": "Andes",
-  "description": "Use Ollama models in UI",
-  "version": "0.0.1",
+  "description": "Run local Ollama models in UI",
+  "version": "0.2.0",
+  "publisher": "",
+  "icon": "./media/marketicon.png",
+  "repository": "https://github.com/aqerd/andes",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.102.0"
   },
   "categories": [
     "Other"
-  ],
-  "activationEvents": [
-    "onCommand:andes.hello",
-    "onView:andesView"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -29,7 +29,8 @@
         {
           "id": "andesView",
           "name": "Andes",
-          "type": "webview"
+          "type": "webview",
+          "icon": "./media/favicon.svg"
         }
       ]
     },
@@ -53,7 +54,7 @@
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
-    "@types/node": "20.x",
+    "@types/node": "^24.1.0",
     "@types/node-fetch": "^2.6.12",
     "@types/vscode": "^1.102.0",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
@@ -67,6 +68,6 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
-    "node-fetch": "^2.7.0"
+    "node-fetch": "^3.3.2"
   }
 }

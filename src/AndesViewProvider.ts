@@ -4,10 +4,19 @@ import { OllamaApiClient } from './OllamaApiClient';
 export class AndesViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'andesView';
     private _view?: vscode.WebviewView;
+
     private readonly apiClient: OllamaApiClient;
 
-    constructor(private readonly context: vscode.ExtensionContext) {
-        this.apiClient = new OllamaApiClient();
+    private constructor(
+        private readonly context: vscode.ExtensionContext,
+        apiClient: OllamaApiClient
+    ) {
+        this.apiClient = apiClient;
+    }
+
+    public static async create(context: vscode.ExtensionContext): Promise<AndesViewProvider> {
+        const apiClient = await OllamaApiClient.create();
+        return new AndesViewProvider(context, apiClient);
     }
 
     public async resolveWebviewView(
@@ -16,12 +25,12 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
         _token: vscode.CancellationToken
     ) {
         this._view = webviewView;
-        
+
         webviewView.webview.options = {
             enableScripts: true,
-            localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'static')] 
+            localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'static')]
         };
-        
+
         webviewView.webview.html = this.getHtmlForWebview(webviewView.webview);
 
         this.setupMessageListener(webviewView);
@@ -36,7 +45,9 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
     }
 
     private async loadModels() {
-        if (!this._view) return;
+        if (!this._view) {
+            return;
+        }
         try {
             const models = await this.apiClient.listModels();
             this._view.webview.postMessage({ type: 'models', models: models });
@@ -64,37 +75,38 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
     }
 
     private getHtmlForWebview(webview: vscode.Webview): string {
-    const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'static', 'scripts', 'webview.js'));
-    const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'static', 'styles', 'webview.css'));
-    
-    const nonce = getNonce();
+        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'static', 'scripts', 'webview.js'));
+        const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'static', 'styles', 'webview.css'));
+        
+        const nonce = getNonce();
 
-    return `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}'; connect-src http://localhost:11434;">
-            <meta name="viewport" content="width=device-width,initial-scale=1.0">
-            <link rel="stylesheet" type="text/css" href="${styleUri}">
-            <title>Andes</title>
-        </head>
-        <body>
-            <div class="container">
-                <div id="messages" class="messages"></div>
-                <div class="input-area">
-                    <textarea id="input" class="chat-input" placeholder="Your prompt..."></textarea>
-                        <div class="bottom-controls">
-                        <select id="model-selector" class="model-selector">
-                            <option value="" disabled selected></option>
-                        </select>
-                        <button id="send" class="send-button">Enter</button>
+        return `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}'; connect-src http://localhost:11434;">
+                <meta name="viewport" content="width=device-width,initial-scale=1.0">
+                <link rel="stylesheet" type="text/css" href="${styleUri}">
+                <title>Andes</title>
+            </head>
+            <body>
+                <div class="container">
+                    <div id="messages" class="messages"></div>
+                    <div class="input-area">
+                        <textarea id="input" class="chat-input" placeholder="Your prompt..."></textarea>
+                            <div class="bottom-controls">
+                            <select id="model-selector" class="model-selector">
+                                <option value="" disabled selected></option>
+                            </select>
+                            <button id="send" class="send-button">Enter</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <script nonce="${nonce}" src="${scriptUri}"></script>
-        </body>
-        </html>`;
+                <script nonce="${nonce}" src="${scriptUri}"></script>
+            </body>
+            </html>
+        `;
     }
 }
 

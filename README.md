@@ -1,5 +1,7 @@
-# Andes 
-<img src="media/favicon.svg" width="24" height="24" fill="white"/> 
+<h1 align="center">Andes</h1>
+<p align="center">
+    <img src="./media/marketicon.png" width="64" height="64"/>
+</p>
 
 A VS Code extension that supports Ollama models in UI locally.
 

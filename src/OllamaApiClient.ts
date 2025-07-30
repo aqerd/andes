@@ -17,13 +17,21 @@ interface OllamaGenerateResponse {
 
 type FetchFunction = (url: RequestInfo, init?: RequestInit) => Promise<Response>;
 
+interface ConvertResponse {
+    html_text: string;
+}
+
 export class OllamaApiClient {
-    private readonly baseUrl: string;
+    private baseUrl: string;
     private readonly fetch: FetchFunction;
 
-    private constructor(baseUrl: string, fetch: FetchFunction) {
+    private constructor(baseUrl: string, fetchImpl?: FetchFunction) {
         this.baseUrl = baseUrl;
-        this.fetch = fetch;
+        if (fetchImpl) {
+            this.fetch = fetchImpl;
+        } else {
+            this.fetch = (() => { throw new Error('Fetch function not initialized'); }) as any;
+        }
     }
 
     public static async create(baseUrl: string = 'http://localhost:11434'): Promise<OllamaApiClient> {
@@ -57,6 +65,31 @@ export class OllamaApiClient {
         }
 
         const data = await response.json() as OllamaGenerateResponse;
-        return data.response;
+        
+        try {
+            const htmlResponse = await this.convertMarkdownToHtml(data.response);
+            return htmlResponse;
+        } catch (error) {
+            console.error('Markdown conversion failed, returning raw response:', error);
+            return data.response;
+        }
+    }
+
+    public async convertMarkdownToHtml(markdownText: string): Promise<string> {
+        const response = await fetch(`http://localhost:11212/convert`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                markdown_text: markdownText
+            }),
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Conversion API error: ${response.statusText}, ${errorText}`);
+        }
+
+        const data = await response.json() as ConvertResponse;
+        return data.html_text;
     }
 }

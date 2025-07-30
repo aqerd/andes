@@ -4,6 +4,3 @@ node_modules
 .vscode-test/
 *.vsix
 bin/*
-internal
-cmd
-go.mod

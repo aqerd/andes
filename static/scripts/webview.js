@@ -28,12 +28,12 @@
 
         if (!text || !selectedModel) {
             if (!selectedModel) {
-                appendMessage('!!! ', 'error-prefix', 'Please select a model first!', 'error-message');
+                appendMessage('error >>> ', 'error-prefix', 'Please select a model first!', 'error-message');
             }
             return;
         }
 
-        appendMessage('>>> ', 'user-prefix', text, 'user-message');
+        appendMessage('you >>> ', 'user-prefix', text, 'user-message');
 
         input.value = '';
         
@@ -58,9 +58,9 @@
         switch (msg.type) {
             case 'result': {
                 if (msg.ok) {
-                    appendMessage('<<< ', 'ai-prefix', msg.text, 'ai-message');
+                    appendMessage(`${msg.model} >>> `, 'ai-prefix', msg.text, 'ai-message');
                 } else {
-                    appendMessage('!!! ', 'error-prefix', msg.error, 'error-message');
+                    appendMessage('error >>> ', 'error-prefix', msg.error, 'error-message');
                 }
                 break;
             }
@@ -82,7 +82,7 @@
                 break;
             }
             case 'error': {
-                appendMessage('!!! ', 'error-prefix', msg.message, 'error-message');
+                appendMessage('error >>> ', 'error-prefix', msg.message, 'error-message');
                 break;
             }
         }

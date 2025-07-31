@@ -1,34 +1,36 @@
 # Change Log
+### Current: 0.3
 All notable changes to the "Andes" extension will be documented in this file.
 Versions lower than `1.0` are betas.
 Note that i don't believe in patches and `0.1` is equal to `0.1.0` and all patches should be zero.
+All dates are in `DD.MM.YYYY` format.
 
 ## 0.5 (as planned)
-- Code working and analyze
+- Code working and analyze.
 
 ## 0.4 (as planned)
-- Chat generation
-- Streaming
+- Chat generation;
+- Streaming.
 
-## 0.3 (current)
+## 0.3 (current, 31.07.2025)
 - Fixed icons;
-- Markdown converter to HTML, written in Golang
-- Nothing at all
+- Markdown converter to HTML, written in Golang and CSS for think tags;
+- Added support for thinking models;
+- LLM's responses are now signed.
 
-#### yet to do
-- html formatted output (it's just html text yet)
+### yet to do
+- code blocks in css
 - renaming ts files in lowercase
-- css for html (including "<think>")
 - environmental variables
 - containerization (?)
-- add support for thinking models
-- model signs
+- minor bug: closing plugin all messages dissapear
+- css: non thinking responses are starting in newline but all user requests are in one line
 
-## 0.2
+## 0.2 (30.07.2025)
 - Removed Go Code, because frontend now directly connects with Ollama's API;
 - Added error handling for API requests;
 - Plugin now has a little bit prettier interface;
 - Added support for multiple models.
 
-## 0.1
+## 0.1 (29.07.2025)
 - Initial release.

@@ -3,9 +3,8 @@ html, body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    font-family: var(--vscode-font-family);
-    font-size: var(--vscode-font-size);
 }
+
 .container {
     display: flex;
     flex-direction: column;
@@ -19,20 +18,19 @@ p {
 
 .message.ai-message, .message.user-message {
     margin-top: 0;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .messages {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 16px;
+    padding: 8px;
     white-space: pre-wrap;
     overflow-wrap: break-word;
 }
 
 .message {
-    margin-bottom: 8px;
     color: var(--vscode-editor-foreground);
 }
 
@@ -90,20 +88,19 @@ p {
 }
 
 .user-prefix, .ai-prefix, .error-prefix {
-    margin-right: 8px;
     font-weight: bold;
 }
 
 .user-prefix {
-    color: var(--vscode-terminal-ansiBrightBlue);
+    color: var(--vscode-editorInfo-foreground);
 }
 
 .ai-prefix {
-    color: var(--vscode-terminal-ansiBrightYellow);
+    color: var(--vscode-symbolIcon-eventForeground);
 }
 
 .error-prefix {
-    color: var(--vscode-terminal-ansiBrightRed);
+    color: var(--vscode-editorOverviewRuler-errorForeground);
 }
 
 think {
@@ -114,42 +111,19 @@ details {
     border: 1px solid var(--vscode-input-border);
     border-radius: 8px;
     margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 summary {
     font-weight: bold;
     cursor: pointer;
     padding: 8px;
+    display: flex;
     align-content: center;
-}
-
-summary {
+    justify-content: center;
     list-style: none;
 }
 
 summary::-webkit-details-marker {
     display: none;
-}
-
-.summary-content {
-    padding: 8px;
-    border-top: 1px solid var(--vscode-input-border);
-}
-
-.messages::-webkit-scrollbar {
-    width: 10px;
-}
-
-.messages::-webkit-scrollbar-track {
-    background: var(--vscode-editor-background);
-}
-
-.messages::-webkit-scrollbar-thumb {
-    background-color: var(--vscode-scrollbarSlider-background);
-    border-radius: 20px;
-    border: 2px solid var(--vscode-editor-background);
-}
-
-.messages::-webkit-scrollbar-thumb:hover {
-    background-color: var(--vscode-scrollbarSlider-hoverBackground);
 }

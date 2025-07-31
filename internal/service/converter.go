@@ -2,8 +2,9 @@ package service
 
 import (
 	"bytes"
-	"fmt"
 	"strings"
+	"unicode"
+
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
@@ -12,7 +13,6 @@ import (
 func Convert(markdown_text string) string {
 	const thinkTagOpen = "<think>"
 	const thinkTagClose = "</think>"
-	const placeholder = "<!--THINK_BLOCK_PLACEHOLDER-->"
 
 	md := goldmark.New(
 		goldmark.WithExtensions(extension.GFM),
@@ -20,23 +20,28 @@ func Convert(markdown_text string) string {
 	)
 
 	textToConvert := markdown_text
-	var final_think string
 
-	startIndex := strings.Index(markdown_text, thinkTagOpen)
-	endIndex := strings.Index(markdown_text, thinkTagClose)
+	startIndex := strings.Index(textToConvert, thinkTagOpen)
+	endIndex := strings.Index(textToConvert, thinkTagClose)
 
 	if startIndex != -1 && endIndex != -1 && endIndex > startIndex {
-		fullBlock := markdown_text[startIndex : endIndex+len(thinkTagClose)]
-		content := strings.TrimSpace(markdown_text[startIndex+len(thinkTagOpen) : endIndex])
-		fmt.Println("cntnt:", content)
-		if content != "" {
-			textToConvert = strings.Replace(markdown_text, fullBlock, placeholder, 1)
-			fmt.Println("textToConvert:", textToConvert)
-			fmt.Println("fullBlock:", fullBlock)
+		content := strings.TrimSpace(textToConvert[startIndex+len(thinkTagOpen) : endIndex])
 
-			final_think = "<details><summary>Thinking mode</summary><div class=\"summary-content\">" + fullBlock + "</div></details>"
+		if content != "" {
+			endOfCloseTag := endIndex + len(thinkTagClose)
+			endOfWhitespace := endOfCloseTag
+			for endOfWhitespace < len(textToConvert) && unicode.IsSpace(rune(textToConvert[endOfWhitespace])) {
+				endOfWhitespace++
+			}
+
+			chunkToReplace := textToConvert[startIndex:endOfWhitespace]
+
+			final_think_html := "<details><summary>Thoughts</summary><div class=\"summary-content\">" + content + "</div></details>"
+
+			textToConvert = strings.Replace(textToConvert, chunkToReplace, final_think_html, 1)
 		} else {
-			textToConvert = strings.Replace(markdown_text, fullBlock, "", 1)
+			fullBlock := textToConvert[startIndex : endIndex+len(thinkTagClose)]
+			textToConvert = strings.Replace(textToConvert, fullBlock, "", 1)
 		}
 	}
 
@@ -47,12 +52,12 @@ func Convert(markdown_text string) string {
 
 	finalResult := buf.String()
 
-	if final_think != "" {
-		finalResult = strings.Replace(finalResult, placeholder, final_think, 1)
+	wrapperP_open := "<p>" + "<details>"
+	wrapperP_close := "</details>" + "</p>"
+	if strings.HasPrefix(finalResult, wrapperP_open) && strings.HasSuffix(finalResult, wrapperP_close) {
+		finalResult = strings.TrimPrefix(finalResult, "<p>")
+		finalResult = strings.TrimSuffix(finalResult, "</p>")
 	}
 
-	fmt.Println(finalResult)
-	fmt.Println("------------------")
-	fmt.Println(markdown_text)
 	return finalResult
 }

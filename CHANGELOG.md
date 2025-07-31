@@ -5,6 +5,14 @@ Versions lower than `1.0` are betas.
 Note that i don't believe in patches and `0.1` is equal to `0.1.0` and all patches should be zero.
 All dates are in `DD.MM.YYYY` format.
 
+### yet to do
+- code blocks in css
+- renaming ts files in lowercase
+- environmental variables
+- containerization (?)
+- minor bug: closing plugin all messages dissapear
+- css: non thinking responses are starting in newline but all user requests are in one line
+
 ## 0.5 (as planned)
 - Code working and analyze.
 
@@ -17,14 +25,6 @@ All dates are in `DD.MM.YYYY` format.
 - Markdown converter to HTML, written in Golang and CSS for think tags;
 - Added support for thinking models;
 - LLM's responses are now signed.
-
-### yet to do
-- code blocks in css
-- renaming ts files in lowercase
-- environmental variables
-- containerization (?)
-- minor bug: closing plugin all messages dissapear
-- css: non thinking responses are starting in newline but all user requests are in one line
 
 ## 0.2 (30.07.2025)
 - Removed Go Code, because frontend now directly connects with Ollama's API;

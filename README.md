@@ -28,9 +28,7 @@ Node.js, VS Code (Cursor, Windsurf and Trae doesn't work) and Ollama
 ## TODO
 - Add support for more API endpoints in this plugin (delete, install models)
 - Add support for models with images
-- Markdown parsing
 - Add support for custom models
-- Better UI
 - File linking in textarea
 
 ## About project

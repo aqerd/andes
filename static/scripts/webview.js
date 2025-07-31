@@ -14,7 +14,9 @@
         prefixSpan.textContent = prefixText;
 
         messageDiv.appendChild(prefixSpan);
-        messageDiv.appendChild(document.createTextNode(messageText));
+        const contentSpan = document.createElement('span');
+        contentSpan.innerHTML = messageText;
+        messageDiv.appendChild(contentSpan);
 
         messages.appendChild(messageDiv);
         messages.scrollTop = messages.scrollHeight;

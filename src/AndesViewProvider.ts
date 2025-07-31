@@ -99,7 +99,7 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
                             <select id="model-selector" class="model-selector">
                                 <option value="" disabled selected></option>
                             </select>
-                            <button id="send" class="send-button">Enter</button>
+                            <button id="send" class="send-button">enter</button>
                         </div>
                     </div>
                 </div>

@@ -90,6 +90,6 @@ export class OllamaApiClient {
         }
 
         const data = await response.json() as ConvertResponse;
-        return data.html_text;
+        return data.html_text.trim();
     }
 }

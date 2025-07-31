@@ -6,34 +6,36 @@ html, body {
     font-family: var(--vscode-font-family);
     font-size: var(--vscode-font-size);
 }
-
-/* Основной контейнер всего приложения */
 .container {
     display: flex;
     flex-direction: column;
-    height: 100%; /* ИЗМЕНЕНО: Заменили 100vh на 100% для корректной работы внутри iframe VS Code */
+    height: 100%;
 }
 
-/* Область для сообщений */
+p {
+    margin-block-start: 0;
+    margin-block-end: 0;
+}
+
+.message.ai-message, .message.user-message {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
 .messages {
-    flex: 1; /* Растягивается, чтобы занять все свободное место */
-    overflow-y: auto; /* Оставляем ТОЛЬКО вертикальный скролл при необходимости */
-    overflow-x: hidden; /* ДОБАВЛЕНО: Явно запрещаем горизонтальный скролл */
-    padding: 16px; /* Немного увеличим отступы для красоты */
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 16px;
     white-space: pre-wrap;
-    /* ИЗМЕНЕНО: overflow-wrap - более современное и правильное свойство для переноса */
     overflow-wrap: break-word;
 }
 
-/* Убираем лишнее свойство из message, так как оно теперь на .messages */
 .message {
     margin-bottom: 8px;
     color: var(--vscode-editor-foreground);
-    /* Это свойство не нужно здесь, если оно есть на родителе .messages */
-    /* overflow-wrap: break-word; */
 }
 
-/* Главный контейнер для области ввода */
 .input-area {
     display: flex;
     flex-direction: column;
@@ -42,7 +44,6 @@ html, body {
     border-top: 1px solid var(--vscode-panel-border);
 }
 
-/* Поле для ввода текста */
 .chat-input {
     width: 100%;
     padding: 8px;
@@ -57,7 +58,6 @@ html, body {
     font-size: var(--vscode-font-size);
 }
 
-/* Контейнер для второй строки (селектор и кнопка) */
 .bottom-controls {
     display: flex;
     justify-content: space-between;
@@ -65,10 +65,9 @@ html, body {
     gap: 4px;
 }
 
-/* Кнопка отправки */
 .send-button {
     padding: 0 8px 0 8px;
-    border-radius: 6px;
+    border-radius: 8px;
     height: 100%;
     background-color: var(--vscode-button-background);
     color: var(--vscode-button-foreground);
@@ -81,17 +80,15 @@ html, body {
     background-color: var(--vscode-button-hoverBackground);
 }
 
-/* Выпадающий список моделей */
 .model-selector {
     flex-grow: 1;
     padding: 4px;
-    border-radius: 6px;
+    border-radius: 8px;
     border: 1px solid var(--vscode-input-border);
     background-color: var(--vscode-input-background);
     color: var(--vscode-input-foreground);
 }
 
-/* Стили для префиксов */
 .user-prefix, .ai-prefix, .error-prefix {
     margin-right: 8px;
     font-weight: bold;
@@ -109,25 +106,50 @@ html, body {
     color: var(--vscode-terminal-ansiBrightRed);
 }
 
-/* --- СТИЛИЗАЦИЯ ПОЛОСЫ ПРОКРУТКИ (ДОБАВЛЕНО) --- */
+think {
+    color: var(--vscode-editor-foreground);
+}
+
+details {
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+summary {
+    font-weight: bold;
+    cursor: pointer;
+    padding: 8px;
+    align-content: center;
+}
+
+summary {
+    list-style: none;
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+.summary-content {
+    padding: 8px;
+    border-top: 1px solid var(--vscode-input-border);
+}
+
 .messages::-webkit-scrollbar {
-    width: 10px; /* Ширина полосы прокрутки */
+    width: 10px;
 }
 
 .messages::-webkit-scrollbar-track {
-    /* Фон дорожки делаем таким же, как фон плагина */
     background: var(--vscode-editor-background);
 }
 
 .messages::-webkit-scrollbar-thumb {
-    /* Стилизуем ползунок под стандартный вид VS Code */
     background-color: var(--vscode-scrollbarSlider-background);
     border-radius: 20px;
-    /* Добавляем рамку в цвет фона для создания визуального отступа */
     border: 2px solid var(--vscode-editor-background);
 }
 
 .messages::-webkit-scrollbar-thumb:hover {
-    /* Цвет ползунка при наведении */
     background-color: var(--vscode-scrollbarSlider-hoverBackground);
 }

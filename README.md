@@ -1,5 +1,7 @@
-# Andes 
-<img src="media/favicon.svg" width="24" height="24" fill="white"/> 
+<h1 align="center">Andes</h1>
+<p align="center">
+    <img src="./media/marketicon.png" width="64" height="64"/>
+</p>
 
 A VS Code extension that supports Ollama models in UI locally.
 
@@ -26,9 +28,7 @@ Node.js, VS Code (Cursor, Windsurf and Trae doesn't work) and Ollama
 ## TODO
 - Add support for more API endpoints in this plugin (delete, install models)
 - Add support for models with images
-- Markdown parsing
 - Add support for custom models
-- Better UI
 - File linking in textarea
 
 ## About project

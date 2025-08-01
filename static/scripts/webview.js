@@ -65,7 +65,11 @@
         switch (msg.type) {
             case 'result': {
                 if (msg.ok) {
-                    appendMessage(`${msg.model} >>> `, 'ai-prefix', msg.text, 'ai-message');
+                    let messageText = msg.text;
+                    if (messageText.startsWith('\n')) {
+                        messageText = messageText.substring(1);
+                    }
+                    appendMessage(`${msg.model} >>> `, 'ai-prefix', messageText, 'ai-message');
                 } else {
                     appendMessage('error >>> ', 'error-prefix', msg.error, 'error-message');
                 }

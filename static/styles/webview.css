@@ -32,6 +32,8 @@ p {
 
 .message {
     color: var(--vscode-editor-foreground);
+    display: grid;
+    gap: 4px;
 }
 
 .input-area {
@@ -93,6 +95,7 @@ p {
 
 .user-prefix {
     color: var(--vscode-editorInfo-foreground);
+    display: block;
 }
 
 .ai-prefix {
@@ -110,8 +113,8 @@ think {
 details {
     border: 1px solid var(--vscode-input-border);
     border-radius: 8px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 2px;
+    margin-bottom: 6px;
 }
 
 summary {
@@ -122,6 +125,10 @@ summary {
     align-content: center;
     justify-content: center;
     list-style: none;
+}
+
+.summary-content {
+    padding: 8px;
 }
 
 summary::-webkit-details-marker {

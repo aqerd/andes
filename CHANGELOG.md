@@ -5,21 +5,20 @@ Versions lower than `1.0` are betas.
 Note that i don't believe in patches and `0.1` is equal to `0.1.0` and all patches should be zero.
 All dates are in `DD.MM.YYYY` format.
 
-### yet to do
-- code blocks in css
-- renaming ts files in lowercase
-- environmental variables
-- containerization (?)
-- css: non thinking responses are starting in newline but all user requests are in one line
-
 ## 0.5 (as planned)
 - Code working and analyze.
 
 ## 0.4 (current, 01.08.2025)
-- Fix: all messages will not dissapear when closing plugin
+- Fixed messages dissapearing when plugin is closed or hidden;
+- Fixed user responses they are now starting in newline;
 
 ### yet to do
+- Code blocks in CSS;
+- Renaming TS files in lowercase;
+- Environmental variables;
+- Containerization (?)
 - Chat generation;
+- Clear button;
 - Streaming.
 
 ## 0.3 (31.07.2025)
@@ -29,7 +28,7 @@ All dates are in `DD.MM.YYYY` format.
 - LLM's responses are now signed.
 
 ## 0.2 (30.07.2025)
-- Removed Go Code, because frontend now directly connects with Ollama's API;
+- Removed Golang code, because frontend now directly connects with Ollama's API;
 - Added error handling for API requests;
 - Plugin now has a little bit prettier interface;
 - Added support for multiple models.

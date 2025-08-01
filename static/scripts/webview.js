@@ -4,6 +4,7 @@
     const messages = document.getElementById('messages');
     const sendButton = document.getElementById('send');
     const modelSelector = document.getElementById('model-selector');
+    const clearButton = document.getElementById('clear');
 
     const previousState = vscode.getState();
     if (previousState && previousState.messages) {
@@ -52,6 +53,11 @@
     }
 
     sendButton.addEventListener('click', sendMessage);
+
+    clearButton.addEventListener('click', () => {
+        messages.innerHTML = '';
+        vscode.setState({ messages: '' });
+    });
 
     input.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' && !event.shiftKey) {

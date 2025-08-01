@@ -94,12 +94,13 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
                 <div class="container">
                     <div id="messages" class="messages"></div>
                     <div class="input-area">
-                        <textarea id="input" class="chat-input" placeholder="Your prompt..."></textarea>
+                        <textarea id="input" class="chat-input" placeholder="start typing your prompt here..."></textarea>
                             <div class="bottom-controls">
                             <select id="model-selector" class="model-selector">
                                 <option value="" disabled selected></option>
                             </select>
-                            <button id="send" class="send-button">enter</button>
+                            <button id="clear" class="activation-button">clear</button>
+                            <button id="send" class="activation-button">enter</button>
                         </div>
                     </div>
                 </div>

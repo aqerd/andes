@@ -65,19 +65,31 @@ p {
     gap: 4px;
 }
 
-.send-button {
+.activation-button {
     padding: 0 8px 0 8px;
     border-radius: 8px;
     height: 100%;
-    background-color: var(--vscode-button-background);
-    color: var(--vscode-button-foreground);
     border: none;
     cursor: pointer;
     white-space: nowrap;
 }
 
-.send-button:hover {
+#send {
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+}
+
+#clear {
+    color: var(--vscode-button-secondaryForeground);
+    background-color: var(--vscode-button-secondaryBackground);
+}
+
+#send:hover {
     background-color: var(--vscode-button-hoverBackground);
+}
+
+#clear:hover {
+    background-color: var(--vscode-button-secondaryHoverBackground);
 }
 
 .model-selector {

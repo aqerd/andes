@@ -8,10 +8,6 @@ All dates are in `DD.MM.YYYY` format.
 ## 0.5 (as planned)
 - Code working and analyze.
 
-## 0.4 (current, 01.08.2025)
-- Small CSS fixes like plugin width, messages dissapearing when plugin is closed or hidden and user responses they are now starting in newline.;
-- Clear button now removes all messages.
-
 ### yet to do
 - Code blocks in CSS;
 - Renaming TS files in lowercase;
@@ -19,6 +15,10 @@ All dates are in `DD.MM.YYYY` format.
 - Containerization (?)
 - Chat generation;
 - Streaming.
+
+## 0.4 (current, 01.08.2025)
+- Small CSS fixes like plugin width, messages dissapearing when plugin is closed or hidden and user responses they are now starting in newline.;
+- Clear button now removes all messages.
 
 ## 0.3 (31.07.2025)
 - Fixed icons;

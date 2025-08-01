@@ -10,17 +10,19 @@ All dates are in `DD.MM.YYYY` format.
 - renaming ts files in lowercase
 - environmental variables
 - containerization (?)
-- minor bug: closing plugin all messages dissapear
 - css: non thinking responses are starting in newline but all user requests are in one line
 
 ## 0.5 (as planned)
 - Code working and analyze.
 
-## 0.4 (as planned)
+## 0.4 (current, 01.08.2025)
+- Fix: all messages will not dissapear when closing plugin
+
+### yet to do
 - Chat generation;
 - Streaming.
 
-## 0.3 (current, 31.07.2025)
+## 0.3 (31.07.2025)
 - Fixed icons;
 - Markdown converter to HTML, written in Golang and CSS for think tags;
 - Added support for thinking models;

@@ -5,6 +5,11 @@
     const sendButton = document.getElementById('send');
     const modelSelector = document.getElementById('model-selector');
 
+    const previousState = vscode.getState();
+    if (previousState && previousState.messages) {
+        messages.innerHTML = previousState.messages;
+    }
+
     function appendMessage(prefixText, prefixClass, messageText, messageClass) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${messageClass}`;
@@ -20,6 +25,8 @@
 
         messages.appendChild(messageDiv);
         messages.scrollTop = messages.scrollHeight;
+
+        vscode.setState({ messages: messages.innerHTML });
     }
 
     function sendMessage() {

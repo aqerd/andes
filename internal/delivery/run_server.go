@@ -9,10 +9,7 @@ import (
 	"andes/internal/service"
 )
 
-const (
-	ollamaServerURL = "http://localhost:11434"
-	PORT = "11212"
-)
+const PORT string = "11212"
 
 func RunServer() {
 	mux := http.NewServeMux()

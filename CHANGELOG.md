@@ -1,5 +1,5 @@
 # Change Log
-### Current: 0.3
+### Current: 0.4
 All notable changes to the "Andes" extension will be documented in this file.
 Versions lower than `1.0` are betas.
 Note that i don't believe in patches and `0.1` is equal to `0.1.0` and all patches should be zero.

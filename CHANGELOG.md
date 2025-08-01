@@ -9,9 +9,8 @@ All dates are in `DD.MM.YYYY` format.
 - Code working and analyze.
 
 ## 0.4 (current, 01.08.2025)
-- Clear button now removes all messages;
-- Fixed messages dissapearing when plugin is closed or hidden;
-- Fixed user responses they are now starting in newline.
+- Small CSS fixes like plugin width, messages dissapearing when plugin is closed or hidden and user responses they are now starting in newline.;
+- Clear button now removes all messages.
 
 ### yet to do
 - Code blocks in CSS;

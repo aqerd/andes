@@ -99,6 +99,10 @@ p {
     border: 1px solid var(--vscode-input-border);
     background-color: var(--vscode-input-background);
     color: var(--vscode-input-foreground);
+    min-width: 30px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .user-prefix, .ai-prefix, .error-prefix {

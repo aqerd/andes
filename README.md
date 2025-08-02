@@ -6,6 +6,7 @@
 A VS Code extension that supports Ollama models in UI locally.
 
 ## How to build
+Set environment variables in `.env` file, copying params from `.env.example` file.
 Make sure you have installed npm, VS Code (Cursor, Windsurf and Trae doesn't work) and Ollama.
 Before testing make sure you have `code` installed in your PATH.
 - Press `CMD + Shift + P` and search for `Shell Command: Install 'code' command in PATH`;

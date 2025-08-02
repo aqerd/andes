@@ -47,9 +47,30 @@ export class OllamaApiClient {
         }
     }
 
-    public static async create(baseUrl: string = 'http://localhost:11434'): Promise<OllamaApiClient> {
+    public static async create(baseUrl?: string): Promise<OllamaApiClient> {
         const { default: fetch } = await import('node-fetch');
-        return new OllamaApiClient(baseUrl, fetch);
+        const ollamaPort = process.env.OLLAMA_PORT || '11434';
+        const finalBaseUrl = baseUrl || `http://localhost:${ollamaPort}`;
+        return new OllamaApiClient(finalBaseUrl, fetch);
+    }
+
+    public async convertMarkdownToHtml(markdownText: string): Promise<string> {
+        const golangApiPort = process.env.GOLANG_API_PORT || '11212';
+        const response = await fetch(`http://localhost:${golangApiPort}/convert`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                markdown_text: markdownText
+            }),
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Conversion API error: ${response.statusText}, ${errorText}`);
+        }
+
+        const data = await response.json() as ConvertResponse;
+        return data.html_text.trim();
     }
 
     public async listModels(): Promise<OllamaModel[]> {
@@ -86,24 +107,6 @@ export class OllamaApiClient {
             console.error('Markdown conversion failed, returning raw response:', error);
             return data.response;
         }
-    }
-
-    public async convertMarkdownToHtml(markdownText: string): Promise<string> {
-        const response = await fetch(`http://localhost:11212/convert`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                markdown_text: markdownText
-            }),
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Conversion API error: ${response.statusText}, ${errorText}`);
-        }
-
-        const data = await response.json() as ConvertResponse;
-        return data.html_text.trim();
     }
 
     private chatHistory: OllamaChatMessage[] = [];

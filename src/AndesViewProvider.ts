@@ -6,17 +6,23 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
 
     private readonly apiClient: OllamaApiClient;
+    private readonly ollamaPort: string;
+    private readonly golangApiPort: string;
 
     private constructor(
         private readonly context: vscode.ExtensionContext,
-        apiClient: OllamaApiClient
+        apiClient: OllamaApiClient,
+        ollamaPort: string,
+        golangApiPort: string
     ) {
         this.apiClient = apiClient;
+        this.ollamaPort = ollamaPort;
+        this.golangApiPort = golangApiPort;
     }
 
-    public static async create(context: vscode.ExtensionContext): Promise<AndesViewProvider> {
-        const apiClient = await OllamaApiClient.create();
-        return new AndesViewProvider(context, apiClient);
+    public static async create(context: vscode.ExtensionContext, ollamaPort: string, golangApiPort: string): Promise<AndesViewProvider> {
+        const apiClient = await OllamaApiClient.create(`http://localhost:${ollamaPort}`);
+        return new AndesViewProvider(context, apiClient, ollamaPort, golangApiPort);
     }
 
     public async resolveWebviewView(
@@ -88,7 +94,7 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}'; connect-src http://localhost:11434;">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}'; connect-src http://localhost:${this.ollamaPort} http://localhost:${this.golangApiPort};">
                 <meta name="viewport" content="width=device-width,initial-scale=1.0">
                 <link rel="stylesheet" type="text/css" href="${styleUri}">
                 <title>Andes</title>

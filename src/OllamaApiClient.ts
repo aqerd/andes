@@ -1,4 +1,6 @@
 import type { RequestInfo, RequestInit, Response } from 'node-fetch';
+import { promises as fs } from 'fs';
+import * as path from 'path';
 
 export interface OllamaModel {
     name: string;
@@ -21,6 +23,17 @@ interface ConvertResponse {
     html_text: string;
 }
 
+interface OllamaChatMessage {
+    role: 'user' | 'assistant' | 'system';
+    content: string;
+    model?: string; 
+}
+
+interface OllamaChatResponse {
+    message: OllamaChatMessage;
+    done: boolean;
+}
+
 export class OllamaApiClient {
     private baseUrl: string;
     private readonly fetch: FetchFunction;
@@ -34,9 +47,30 @@ export class OllamaApiClient {
         }
     }
 
-    public static async create(baseUrl: string = 'http://localhost:11434'): Promise<OllamaApiClient> {
+    public static async create(baseUrl?: string): Promise<OllamaApiClient> {
         const { default: fetch } = await import('node-fetch');
-        return new OllamaApiClient(baseUrl, fetch);
+        const ollamaPort = process.env.OLLAMA_PORT || '11434';
+        const finalBaseUrl = baseUrl || `http://localhost:${ollamaPort}`;
+        return new OllamaApiClient(finalBaseUrl, fetch);
+    }
+
+    public async convertMarkdownToHtml(markdownText: string): Promise<string> {
+        const golangApiPort = process.env.GOLANG_API_PORT || '11212';
+        const response = await fetch(`http://localhost:${golangApiPort}/convert`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                markdown_text: markdownText
+            }),
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Conversion API error: ${response.statusText}, ${errorText}`);
+        }
+
+        const data = await response.json() as ConvertResponse;
+        return data.html_text.trim();
     }
 
     public async listModels(): Promise<OllamaModel[]> {
@@ -75,21 +109,50 @@ export class OllamaApiClient {
         }
     }
 
-    public async convertMarkdownToHtml(markdownText: string): Promise<string> {
-        const response = await fetch(`http://localhost:11212/convert`, {
+    private chatHistory: OllamaChatMessage[] = [];
+    private systemPrompt: string | null = null;
+
+    private async ensureSystemPrompt() {
+        if (this.systemPrompt === null) {
+            const promptPath = path.resolve(__dirname, '../static/rules/system_prompt.md');
+            this.systemPrompt = await fs.readFile(promptPath, 'utf-8');
+        }
+    }
+
+    public async chat(message: string, model: string): Promise<OllamaChatMessage[]> {
+        await this.ensureSystemPrompt();
+        if (this.chatHistory.length === 0 && this.systemPrompt) {
+            this.chatHistory.push({ role: 'system', content: this.systemPrompt });
+        }
+        this.chatHistory.push({ role: 'user', content: message });
+        const response = await this.fetch(`${this.baseUrl}/api/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                markdown_text: markdownText
+                model: model,
+                messages: this.chatHistory,
+                stream: false
             }),
         });
-
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Conversion API error: ${response.statusText}, ${errorText}`);
+            throw new Error(`Ollama API error: ${response.statusText}, ${errorText}`);
         }
+        const data = await response.json() as OllamaChatResponse;
+        try {
+            const htmlResponse = await this.convertMarkdownToHtml(data.message.content);
+            this.chatHistory.push({ ...data.message, content: htmlResponse, model: model });
+        } catch (error) {
+            console.error('Markdown conversion failed for chat response, returning raw response:', error);
+            this.chatHistory.push({ ...data.message, model: model });
+        }
+        return [...this.chatHistory];
+    }
 
-        const data = await response.json() as ConvertResponse;
-        return data.html_text.trim();
+    public clearChatHistory(): void {
+        this.chatHistory = [];
+        if (this.systemPrompt) {
+            this.chatHistory.push({ role: 'system', content: this.systemPrompt });
+        }
     }
 }

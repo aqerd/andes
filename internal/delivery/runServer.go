@@ -5,21 +5,26 @@ import (
 	"io"
 	"log"
 	"net/http"
-	
+	"os"
+
 	"andes/internal/service"
 )
 
-const (
-	ollamaServerURL = "http://localhost:11434"
-	PORT = "11212"
-)
+func PortSetup() string {
+	port := os.Getenv("GOLANG_API_PORT")
+	if port == "" {
+		port = "11212"
+	}
+	return port;
+}
 
 func RunServer() {
+	var port string = PortSetup();
+	
 	mux := http.NewServeMux()
-
 	mux.HandleFunc("/convert", ConvertMarkdownToHTML)
 
-	if err := http.ListenAndServe("localhost:" + PORT, mux); err != nil {
+	if err := http.ListenAndServe("localhost:"+port, mux); err != nil {
 		log.Fatal("Server failed to start: ", err)
 	}
 }

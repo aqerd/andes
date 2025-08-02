@@ -1,22 +1,28 @@
 import * as vscode from 'vscode';
-import { OllamaApiClient } from './OllamaApiClient';
+import { OllamaApiClient } from './ollamaApiClient';
 
 export class AndesViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'andesView';
     private _view?: vscode.WebviewView;
 
     private readonly apiClient: OllamaApiClient;
+    private readonly ollamaPort: string;
+    private readonly golangApiPort: string;
 
     private constructor(
         private readonly context: vscode.ExtensionContext,
-        apiClient: OllamaApiClient
+        apiClient: OllamaApiClient,
+        ollamaPort: string,
+        golangApiPort: string
     ) {
         this.apiClient = apiClient;
+        this.ollamaPort = ollamaPort;
+        this.golangApiPort = golangApiPort;
     }
 
-    public static async create(context: vscode.ExtensionContext): Promise<AndesViewProvider> {
-        const apiClient = await OllamaApiClient.create();
-        return new AndesViewProvider(context, apiClient);
+    public static async create(context: vscode.ExtensionContext, ollamaPort: string, golangApiPort: string): Promise<AndesViewProvider> {
+        const apiClient = await OllamaApiClient.create(`http://localhost:${ollamaPort}`);
+        return new AndesViewProvider(context, apiClient, ollamaPort, golangApiPort);
     }
 
     public async resolveWebviewView(
@@ -62,14 +68,17 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
             if (message.type === 'chat') {
                 try {
                     webviewView.webview.postMessage({ type: 'loading', isLoading: true });
-                    const responseText = await this.apiClient.generate(message.prompt, message.model);
-                    webviewView.webview.postMessage({ type: 'result', ok: true, text: responseText, model: message.model });
+                    const chatHistory = await this.apiClient.chat(message.prompt, message.model);
+                    webviewView.webview.postMessage({ type: 'result', ok: true, chatHistory, model: message.model });
                 } catch (err: any) {
                     const errorMessage = err.message || 'An unknown error occurred.';
                     webviewView.webview.postMessage({ type: 'result', ok: false, error: errorMessage, model: message.model });
                 } finally {
                     webviewView.webview.postMessage({ type: 'loading', isLoading: false });
                 }
+            } else if (message.type === 'clear') {
+                this.apiClient.clearChatHistory();
+                webviewView.webview.postMessage({ type: 'cleared' });
             }
         });
     }
@@ -85,7 +94,7 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}'; connect-src http://localhost:11434;">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}'; connect-src http://localhost:${this.ollamaPort} http://localhost:${this.golangApiPort};">
                 <meta name="viewport" content="width=device-width,initial-scale=1.0">
                 <link rel="stylesheet" type="text/css" href="${styleUri}">
                 <title>Andes</title>
@@ -94,12 +103,13 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
                 <div class="container">
                     <div id="messages" class="messages"></div>
                     <div class="input-area">
-                        <textarea id="input" class="chat-input" placeholder="Your prompt..."></textarea>
+                        <textarea id="input" class="chat-input" placeholder="start typing your prompt here..."></textarea>
                             <div class="bottom-controls">
                             <select id="model-selector" class="model-selector">
                                 <option value="" disabled selected></option>
                             </select>
-                            <button id="send" class="send-button">enter</button>
+                            <button id="clear" class="activation-button">clear</button>
+                            <button id="send" class="activation-button">enter</button>
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,6 @@
 import type { RequestInfo, RequestInit, Response } from 'node-fetch';
+import { promises as fs } from 'fs';
+import * as path from 'path';
 
 export interface OllamaModel {
     name: string;
@@ -104,8 +106,20 @@ export class OllamaApiClient {
     }
 
     private chatHistory: OllamaChatMessage[] = [];
+    private systemPrompt: string | null = null;
+
+    private async ensureSystemPrompt() {
+        if (this.systemPrompt === null) {
+            const promptPath = path.resolve(__dirname, '../static/rules/system_prompt.md');
+            this.systemPrompt = await fs.readFile(promptPath, 'utf-8');
+        }
+    }
 
     public async chat(message: string, model: string): Promise<OllamaChatMessage[]> {
+        await this.ensureSystemPrompt();
+        if (this.chatHistory.length === 0 && this.systemPrompt) {
+            this.chatHistory.push({ role: 'system', content: this.systemPrompt });
+        }
         this.chatHistory.push({ role: 'user', content: message });
         const response = await this.fetch(`${this.baseUrl}/api/chat`, {
             method: 'POST',
@@ -121,7 +135,6 @@ export class OllamaApiClient {
             throw new Error(`Ollama API error: ${response.statusText}, ${errorText}`);
         }
         const data = await response.json() as OllamaChatResponse;
-        
         try {
             const htmlResponse = await this.convertMarkdownToHtml(data.message.content);
             this.chatHistory.push({ ...data.message, content: htmlResponse });

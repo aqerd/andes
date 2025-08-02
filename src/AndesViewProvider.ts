@@ -62,8 +62,8 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
             if (message.type === 'chat') {
                 try {
                     webviewView.webview.postMessage({ type: 'loading', isLoading: true });
-                    const responseText = await this.apiClient.generate(message.prompt, message.model);
-                    webviewView.webview.postMessage({ type: 'result', ok: true, text: responseText, model: message.model });
+                    const chatHistory = await this.apiClient.chat(message.prompt, message.model);
+                    webviewView.webview.postMessage({ type: 'result', ok: true, chatHistory, model: message.model });
                 } catch (err: any) {
                     const errorMessage = err.message || 'An unknown error occurred.';
                     webviewView.webview.postMessage({ type: 'result', ok: false, error: errorMessage, model: message.model });

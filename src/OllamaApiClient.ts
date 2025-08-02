@@ -21,6 +21,16 @@ interface ConvertResponse {
     html_text: string;
 }
 
+interface OllamaChatMessage {
+    role: 'user' | 'assistant' | 'system';
+    content: string;
+}
+
+interface OllamaChatResponse {
+    message: OllamaChatMessage;
+    done: boolean;
+}
+
 export class OllamaApiClient {
     private baseUrl: string;
     private readonly fetch: FetchFunction;
@@ -91,5 +101,27 @@ export class OllamaApiClient {
 
         const data = await response.json() as ConvertResponse;
         return data.html_text.trim();
+    }
+
+    private chatHistory: OllamaChatMessage[] = [];
+
+    public async chat(message: string, model: string): Promise<OllamaChatMessage[]> {
+        this.chatHistory.push({ role: 'user', content: message });
+        const response = await this.fetch(`${this.baseUrl}/api/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: model,
+                messages: this.chatHistory,
+                stream: false
+            }),
+        });
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Ollama API error: ${response.statusText}, ${errorText}`);
+        }
+        const data = await response.json() as OllamaChatResponse;
+        this.chatHistory.push(data.message);
+        return [...this.chatHistory];
     }
 }

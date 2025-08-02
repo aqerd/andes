@@ -30,53 +30,43 @@
         vscode.setState({ messages: messages.innerHTML });
     }
 
+    let chatHistory = [];
+
     function sendMessage() {
         const text = input.value.trim();
         const selectedModel = modelSelector.value;
-
         if (!text || !selectedModel) {
             if (!selectedModel) {
                 appendMessage('error >>> ', 'error-prefix', 'Please select a model first!', 'error-message');
             }
             return;
         }
-
         appendMessage('you >>> ', 'user-prefix', text, 'user-message');
-
+        chatHistory.push({ role: 'user', content: text });
         input.value = '';
-        
         vscode.postMessage({
             type: 'chat',
             prompt: text,
-            model: selectedModel
+            model: selectedModel,
+            chatHistory: chatHistory
         });
     }
-
-    sendButton.addEventListener('click', sendMessage);
-
-    clearButton.addEventListener('click', () => {
-        messages.innerHTML = '';
-        vscode.setState({ messages: '' });
-    });
-
-    input.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-            sendMessage();
-        }
-    });
 
     window.addEventListener('message', event => {
         const msg = event.data;
         switch (msg.type) {
             case 'result': {
-                if (msg.ok) {
-                    let messageText = msg.text;
-                    if (messageText.startsWith('\n')) {
-                        messageText = messageText.substring(1);
-                    }
-                    appendMessage(`${msg.model} >>> `, 'ai-prefix', messageText, 'ai-message');
-                } else {
+                if (msg.ok && msg.chatHistory) {
+                    chatHistory = msg.chatHistory;
+                    messages.innerHTML = '';
+                    chatHistory.forEach(m => {
+                        if (m.role === 'user') {
+                            appendMessage('you >>> ', 'user-prefix', m.content, 'user-message');
+                        } else if (m.role === 'assistant') {
+                            appendMessage(`${msg.model} >>> `, 'ai-prefix', m.content, 'ai-message');
+                        }
+                    });
+                } else if (!msg.ok) {
                     appendMessage('error >>> ', 'error-prefix', msg.error, 'error-message');
                 }
                 break;
@@ -102,6 +92,21 @@
                 appendMessage('error >>> ', 'error-prefix', msg.message, 'error-message');
                 break;
             }
+        }
+    });
+
+    sendButton.addEventListener('click', sendMessage);
+
+    clearButton.addEventListener('click', () => {
+        messages.innerHTML = '';
+        chatHistory = [];
+        vscode.setState({ messages: '' });
+    });
+
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
         }
     });
 }());

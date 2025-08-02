@@ -121,7 +121,14 @@ export class OllamaApiClient {
             throw new Error(`Ollama API error: ${response.statusText}, ${errorText}`);
         }
         const data = await response.json() as OllamaChatResponse;
-        this.chatHistory.push(data.message);
+        
+        try {
+            const htmlResponse = await this.convertMarkdownToHtml(data.message.content);
+            this.chatHistory.push({ ...data.message, content: htmlResponse });
+        } catch (error) {
+            console.error('Markdown conversion failed for chat response, returning raw response:', error);
+            this.chatHistory.push(data.message);
+        }
         return [...this.chatHistory];
     }
 }

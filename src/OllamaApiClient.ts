@@ -26,6 +26,7 @@ interface ConvertResponse {
 interface OllamaChatMessage {
     role: 'user' | 'assistant' | 'system';
     content: string;
+    model?: string; 
 }
 
 interface OllamaChatResponse {
@@ -137,11 +138,18 @@ export class OllamaApiClient {
         const data = await response.json() as OllamaChatResponse;
         try {
             const htmlResponse = await this.convertMarkdownToHtml(data.message.content);
-            this.chatHistory.push({ ...data.message, content: htmlResponse });
+            this.chatHistory.push({ ...data.message, content: htmlResponse, model: model });
         } catch (error) {
             console.error('Markdown conversion failed for chat response, returning raw response:', error);
-            this.chatHistory.push(data.message);
+            this.chatHistory.push({ ...data.message, model: model });
         }
         return [...this.chatHistory];
+    }
+
+    public clearChatHistory(): void {
+        this.chatHistory = [];
+        if (this.systemPrompt) {
+            this.chatHistory.push({ role: 'system', content: this.systemPrompt });
+        }
     }
 }

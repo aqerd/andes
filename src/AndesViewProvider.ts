@@ -70,6 +70,9 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
                 } finally {
                     webviewView.webview.postMessage({ type: 'loading', isLoading: false });
                 }
+            } else if (message.type === 'clear') {
+                this.apiClient.clearChatHistory();
+                webviewView.webview.postMessage({ type: 'cleared' });
             }
         });
     }

@@ -63,12 +63,19 @@
                         if (m.role === 'user') {
                             appendMessage('you >>> ', 'user-prefix', m.content, 'user-message');
                         } else if (m.role === 'assistant') {
-                            appendMessage(`${msg.model} >>> `, 'ai-prefix', m.content, 'ai-message');
+                            const modelName = m.model || msg.model; // Fallback to current model for older messages
+                            appendMessage(`${modelName} >>> `, 'ai-prefix', m.content, 'ai-message');
                         }
                     });
                 } else if (!msg.ok) {
                     appendMessage('error >>> ', 'error-prefix', msg.error, 'error-message');
                 }
+                break;
+            }
+            case 'cleared': {
+                messages.innerHTML = '';
+                chatHistory = [];
+                vscode.setState({ messages: '' });
                 break;
             }
             case 'models': {
@@ -98,9 +105,7 @@
     sendButton.addEventListener('click', sendMessage);
 
     clearButton.addEventListener('click', () => {
-        messages.innerHTML = '';
-        chatHistory = [];
-        vscode.setState({ messages: '' });
+        vscode.postMessage({ type: 'clear' });
     });
 
     input.addEventListener('keydown', (event) => {

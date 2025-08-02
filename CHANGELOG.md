@@ -6,19 +6,16 @@ Note that i don't believe in patches and `0.1` is equal to `0.1.0` and all patch
 All dates are in `DD.MM.YYYY` format.
 
 ## 0.5 (as planned)
-- Code working and analyze.
-
-### yet to do
+- Code working and analyze;
 - Code blocks in CSS;
-- Renaming TS files in lowercase;
 - Environmental variables;
-- Containerization (?)
-- Chat generation;
+- Containerization (possibly);
 - Streaming.
 
-## 0.4 (current, 01.08.2025)
+## 0.4 (current, 02.08.2025)
 - Small CSS fixes like plugin width, messages dissapearing when plugin is closed or hidden and user responses they are now starting in newline.;
-- Clear button now removes all messages.
+- Clear button now removes all messages;
+- Chat generation.
 
 ## 0.3 (31.07.2025)
 - Fixed icons;

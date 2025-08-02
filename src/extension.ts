@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { AndesViewProvider } from './AndesViewProvider';
+import { AndesViewProvider } from './andesViewProvider';
 
 export async function activate(context: vscode.ExtensionContext) {
     const provider = await AndesViewProvider.create(context);

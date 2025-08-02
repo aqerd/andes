@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { OllamaApiClient } from './OllamaApiClient';
+import { OllamaApiClient } from './ollamaApiClient';
 
 export class AndesViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'andesView';

@@ -16,7 +16,7 @@ p {
     margin-block-end: 0;
 }
 
-.message.ai-message, .message.user-message {
+.message.ai-message, .message.user-message, .message.error-message {
     margin-top: 0;
     margin-bottom: 16px;
 }

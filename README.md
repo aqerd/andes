@@ -3,7 +3,16 @@
     <img src="./media/marketicon.png" width="64" height="64"/>
 </p>
 
-A VS Code extension that supports Ollama models in UI locally.
+![Current Version](https://img.shields.io/github/package-json/v/aqerd/andes?color=%23FFA500)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/t/aqerd/andes)
+![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/:extensionId)
+![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/:extensionId)
+![Author & Maintainer](https://img.shields.io/badge/Ruslan%20Suleymanov-8A2BE2)
+
+A VS Code extension that supports Ollama models in UI locally. Not released in VS Code market yet
+
+## Requirements
+Node.js, Golang, VS Code (Cursor, Windsurf and Trae doesn't work somehow) and Ollama.
 
 ## How to build
 Set environment variables in `.env` file, copying params from `.env.example` file.
@@ -17,36 +26,19 @@ And you ready for extension testing:
 - Go to `Run` -> `Start Debugging` (or just Press `F5`)
 - Wait until the new VS Code window will appear (Extension Development Host);
 - Press `CMD + Shift + P` and search for `Andes`;
-- Make sure ollama is serving: run `ollama serve` in Terminal on port 11434.
+- Make sure ollama is serving: run `ollama serve` in Terminal on port `11434`.
 
-## Features
-- View list of your local Ollama models
-- Generate some text
+## Key Capabilities
+- Manage your installed Ollama models locally;
+- Chat with AI;
+- Observe the reasoning process and decision-making of AI models.
 
-## Requirements
-Node.js, VS Code (Cursor, Windsurf and Trae doesn't work) and Ollama
+## Changelog
+Visit [CHANGELOG.md](./CHANGELOG.md)
 
 ## TODO
-- Add support for more API endpoints in this plugin (delete, install models)
-- Add support for models with images
-- Add support for custom models
-- File linking in textarea
+Visit [TODO.md](./TODO.md)
 
 ## About project
-Sadly it's written in TypeScript
-
-<!-- 
-## Extension Settings
-
-## Known Issues
-
-## Release Notes
-
-## Following extension guidelines
-
-## Working with Markdown
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/) -->
+Goal: I wrote this plugin because i wanted the extension that doesn't require an authentication and only works with Ollama. Cline is not my answer but it's great plugin with almost every provider. But still not an answer for me.
+Info: Sadly it's written in TypeScript but API is in Golang

@@ -1,117 +1,286 @@
-(function () {
+(function() {
     const vscode = acquireVsCodeApi();
+
     const input = document.getElementById('input');
-    const messages = document.getElementById('messages');
     const sendButton = document.getElementById('send');
-    const modelSelector = document.getElementById('model-selector');
     const clearButton = document.getElementById('clear');
+    const messagesContainer = document.getElementById('messages');
+    const modelSelector = document.getElementById('model-selector');
+    const fileSuggestions = document.getElementById('file-suggestions');
+    const fileSearch = document.getElementById('file-search');
+    const fileList = document.getElementById('file-list');
 
-    const previousState = vscode.getState();
-    if (previousState && previousState.messages) {
-        messages.innerHTML = previousState.messages;
-    }
+    let recentFiles = [];
+    let showFileSuggestions = false;
 
-    function appendMessage(prefixText, prefixClass, messageText, messageClass) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${messageClass}`;
+    vscode.postMessage({ type: 'getRecentFiles' });
 
-        const prefixSpan = document.createElement('span');
-        prefixSpan.className = prefixClass;
-        prefixSpan.textContent = prefixText;
+    input.addEventListener('input', (e) => {
+        const value = e.target.value;
+        const cursorPos = e.target.selectionStart;
+        const textBeforeCursor = value.substring(0, cursorPos);
 
-        messageDiv.appendChild(prefixSpan);
-        const contentSpan = document.createElement('span');
-        contentSpan.innerHTML = messageText;
-        messageDiv.appendChild(contentSpan);
+        const fileMatch = textBeforeCursor.match(/#File:([^\s]*)$/);
 
-        messages.appendChild(messageDiv);
-        messages.scrollTop = messages.scrollHeight;
+        if (fileMatch) {
+            showFileSuggestions = true;
+            fileSuggestions.style.display = 'block';
+            const searchTerm = fileMatch[1];
 
-        vscode.setState({ messages: messages.innerHTML });
-    }
-
-    let chatHistory = [];
-
-    function sendMessage() {
-        const text = input.value.trim();
-        const selectedModel = modelSelector.value;
-        if (!text || !selectedModel) {
-            if (!selectedModel) {
-                appendMessage('error >>> ', 'error-prefix', 'Please select a model first!', 'error-message');
+            if (searchTerm) {
+                vscode.postMessage({ type: 'searchFiles', query: searchTerm });
+            } else {
+                displayFiles(recentFiles);
             }
-            return;
-        }
-        appendMessage('you >>> ', 'user-prefix', text, 'user-message');
-        chatHistory.push({ role: 'user', content: text });
-        input.value = '';
-        vscode.postMessage({
-            type: 'chat',
-            prompt: text,
-            model: selectedModel,
-            chatHistory: chatHistory
-        });
-    }
-
-    window.addEventListener('message', event => {
-        const msg = event.data;
-        switch (msg.type) {
-            case 'result': {
-                if (msg.ok && msg.chatHistory) {
-                    chatHistory = msg.chatHistory;
-                    messages.innerHTML = '';
-                    chatHistory.forEach(m => {
-                        if (m.role === 'user') {
-                            appendMessage('you >>> ', 'user-prefix', m.content, 'user-message');
-                        } else if (m.role === 'assistant') {
-                            const modelName = m.model || msg.model; // Fallback to current model for older messages
-                            appendMessage(`${modelName} >>> `, 'ai-prefix', m.content, 'ai-message');
-                        }
-                    });
-                } else if (!msg.ok) {
-                    appendMessage('error >>> ', 'error-prefix', msg.error, 'error-message');
-                }
-                break;
-            }
-            case 'cleared': {
-                messages.innerHTML = '';
-                chatHistory = [];
-                vscode.setState({ messages: '' });
-                break;
-            }
-            case 'models': {
-                modelSelector.innerHTML = '<option value="" disabled>Select a model</option>';
-                if (msg.models && msg.models.length > 0) {
-                    msg.models.forEach((model, index) => {
-                        const option = document.createElement('option');
-                        option.value = model.name;
-                        option.textContent = model.name;
-                        
-                        if (index === 0) {
-                            option.selected = true;
-                        }
-
-                        modelSelector.appendChild(option);
-                    });
-                }
-                break;
-            }
-            case 'error': {
-                appendMessage('error >>> ', 'error-prefix', msg.message, 'error-message');
-                break;
-            }
+        } else {
+            hideFileSuggestions();
         }
     });
 
+    function hideFileSuggestions() {
+        showFileSuggestions = false;
+        fileSuggestions.style.display = 'none';
+    }
+
+    function displayFiles(files) {
+        fileList.innerHTML = '';
+        files.forEach(file => {
+            const li = document.createElement('li');
+            li.textContent = file;
+            li.addEventListener('click', () => {
+                insertFileReference(file);
+                hideFileSuggestions();
+            });
+            fileList.appendChild(li);
+        });
+    }
+
+    function insertFileReference(filename) {
+        const cursorPos = input.selectionStart;
+        const value = input.value;
+        const beforeCursor = value.substring(0, cursorPos);
+        const afterCursor = value.substring(cursorPos);
+        
+        const newValue = beforeCursor.replace(/#File:[^\s]*$/, `#File:${filename}`) + afterCursor;
+        input.value = newValue;
+        input.focus();
+    }
+
+    fileSearch.addEventListener('input', (e) => {
+        const query = e.target.value;
+        if (query) {
+            vscode.postMessage({ type: 'searchFiles', query });
+        } else {
+            displayFiles(recentFiles);
+        }
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!fileSuggestions.contains(e.target) && e.target !== input) {
+            hideFileSuggestions();
+        }
+    });
+
+    function sendMessage() {
+        const prompt = input.value.trim();
+        const model = modelSelector.value;
+        
+        if (!prompt || !model) return;
+        
+        displayUserMessage(prompt);
+        
+        vscode.postMessage({
+            type: 'chat',
+            prompt: prompt,
+            model: model
+        });
+        
+        input.value = '';
+        hideFileSuggestions();
+    }
+
+    function displayUserMessage(content) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message user-message';
+        messageDiv.innerHTML = `
+            <span class="user-prefix">You:</span> ${escapeHtml(content)}
+        `;
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function displayMessage(chatHistory, model) {
+        const lastAssistantMessage = chatHistory.filter(msg => msg.role === 'assistant').pop();
+
+        if (lastAssistantMessage) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ai-message';
+
+            let processedContent = lastAssistantMessage.content;
+
+            processedContent = processedContent.replace(/<pre><code[^>]*>(.*?)<\/code><\/pre>/gs, (match, code) => {
+                return '\n```\n' + escapeHtml(code.trim()) + '\n```\n';
+            });
+
+            processedContent = processedContent.replace(/<code[^>]*>(.*?)<\/code>/gs, (match, code) => {
+                return '`' + escapeHtml(code) + '`';
+            });
+
+            processedContent = processedContent.replace(/<[^>]*>/g, '');
+
+            messageDiv.innerHTML = `
+                <span class="ai-prefix">${model}:</span> ${processedContent}
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    }
+
     sendButton.addEventListener('click', sendMessage);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
 
     clearButton.addEventListener('click', () => {
         vscode.postMessage({ type: 'clear' });
     });
 
-    input.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-            sendMessage();
+    window.addEventListener('message', (event) => {
+        const message = event.data;
+
+        switch (message.type) {
+            case 'models':
+                modelSelector.innerHTML = '';
+                message.models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.name;
+                    option.textContent = model.name;
+                    modelSelector.appendChild(option);
+                });
+                break;
+            case 'recentFiles':
+                recentFiles = message.files;
+                break;
+            case 'searchResults':
+                displayFiles(message.files);
+                break;
+            case 'diffDetected':
+                showDiffApplyDialog(message.diff, message.filePath);
+                break;
+                
+            case 'result':
+                if (message.ok) {
+                    displayMessage(message.chatHistory, message.model);
+                } else {
+                    displayError(message.error);
+                }
+                break;
+            case 'loading':
+                updateLoadingState(message.isLoading);
+                break;
+            case 'cleared':
+                messagesContainer.innerHTML = '';
+                break;
         }
     });
-}());
+
+    function showDiffApplyDialog(diff, filePath) {
+        const dialog = document.createElement('div');
+        dialog.className = 'diff-dialog';
+        dialog.innerHTML = `
+            <div class="diff-content">
+                <h3>Code Changes Detected</h3>
+                <pre>${escapeHtml(diff)}</pre>
+                <div class="diff-actions">
+                    <button onclick="applyDiff('${escapeHtml(filePath)}', '${escapeHtml(diff)}')">Apply Changes</button>
+                    <button onclick="closeDiffDialog()">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(dialog);
+    }
+
+    window.applyDiff = function(filePath, diff) {
+        vscode.postMessage({
+            type: 'applyDiff',
+            diff: diff,
+            filePath: filePath
+        });
+        closeDiffDialog();
+    };
+    
+    window.closeDiffDialog = function() {
+        const dialog = document.querySelector('.diff-dialog');
+        if (dialog) {
+            dialog.remove();
+        }
+    };
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function displayMessage(chatHistory, model) {
+        const lastAssistantMessage = chatHistory.filter(msg => msg.role === 'assistant').pop();
+
+        if (lastAssistantMessage) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ai-message';
+            messageDiv.innerHTML = `
+                <div class="ai-prefix">${model}:</div>
+                <div class="content">${escapeHtml(lastAssistantMessage.content)}</div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    }
+
+    function displayUserMessage(content) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message user-message';
+        messageDiv.innerHTML = `
+            <div class="user-prefix">You:</div>
+            <div class="content">${escapeHtml(content)}</div>
+        `;
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function displayMessage(chatHistory, model) {
+        const lastAssistantMessage = chatHistory.filter(msg => msg.role === 'assistant').pop();
+
+        if (lastAssistantMessage) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ai-message';
+
+            messageDiv.innerHTML = `
+                <div class="ai-prefix">${model}:</div>
+                <div class="content">${lastAssistantMessage.content}</div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    }
+
+    function updateLoadingState(isLoading) {
+        sendButton.disabled = isLoading;
+        input.disabled = isLoading;
+    }
+
+    function displayError(errorMessage) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'message error';
+        errorDiv.innerHTML = `
+            <div class="error-content">
+                <strong>Error:</strong> ${escapeHtml(String(errorMessage))}
+            </div>
+        `;
+        messagesContainer.appendChild(errorDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+})();

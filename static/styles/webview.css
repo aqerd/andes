@@ -150,3 +150,179 @@ summary {
 summary::-webkit-details-marker {
     display: none;
 }
+
+.file-suggestions {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    background: var(--vscode-dropdown-background);
+    border: 1px solid var(--vscode-dropdown-border);
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.file-suggestions input {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    background: transparent;
+    color: var(--vscode-input-foreground);
+}
+
+.file-suggestions ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.file-suggestions li {
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--vscode-dropdown-border);
+}
+
+.file-suggestions li:hover {
+    background: var(--vscode-list-hoverBackground);
+}
+
+.diff-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.diff-content {
+    background: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-panel-border);
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 80%;
+    max-height: 80%;
+    overflow: auto;
+}
+
+.diff-content pre {
+    background: var(--vscode-textCodeBlock-background);
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+.diff-actions {
+    margin-top: 15px;
+    text-align: right;
+}
+
+.diff-actions button {
+    margin-left: 10px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.diff-actions button:first-child {
+    background: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+}
+
+.diff-actions button:last-child {
+    background: var(--vscode-button-secondaryBackground);
+    color: var(--vscode-button-secondaryForeground);
+}
+
+.message.error {
+    background-color: var(--vscode-inputValidation-errorBackground);
+    border: 1px solid var(--vscode-inputValidation-errorBorder);
+    color: var(--vscode-inputValidation-errorForeground);
+    padding: 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.error-content {
+    font-family: var(--vscode-editor-font-family);
+    font-size: var(--vscode-editor-font-size);
+}
+
+.message.user {
+    background-color: var(--vscode-input-background);
+    border-left: 3px solid var(--vscode-inputValidation-infoBorder);
+}
+
+.message.user .model-name {
+    color: var(--vscode-input-foreground);
+}
+
+
+.message .content pre,
+.message .content code {
+    font-family: var(--vscode-editor-font-family, 'Consolas', 'Monaco', monospace);
+    background-color: var(--vscode-editor-selectionBackground);
+    border-radius: 3px;
+    padding: 2px 4px;
+}
+
+.message .content {
+    display: block;
+    line-height: 1.5;
+}
+
+.message .content pre {
+    background-color: var(--vscode-textCodeBlock-background);
+    border: 1px solid var(--vscode-panel-border);
+    border-radius: 4px;
+    padding: 8px;
+    margin: 8px 0;
+    overflow-x: auto;
+    font-family: var(--vscode-editor-font-family, 'Consolas', 'Monaco', monospace);
+    font-size: 0.9em;
+    white-space: pre-wrap;
+}
+
+.message .content code {
+    background-color: var(--vscode-textCodeBlock-background);
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-family: var(--vscode-editor-font-family, 'Consolas', 'Monaco', monospace);
+    font-size: 0.9em;
+}
+
+.message .content p {
+    margin: 0 0 8px 0;
+}
+
+.message .content ul, .message .content ol {
+    margin: 0 0 8px 20px;
+    padding: 0;
+}
+
+.message .content li {
+    margin-bottom: 4px;
+}
+
+.message .content h1,
+.message .content h2,
+.message .content h3, 
+.message .content h4,
+.message .content h5,
+.message .content h6 {
+    margin: 16px 0 8px 0;
+    font-weight: bold;
+}
+
+.message .content h1 { font-size: 1.5em; }
+.message .content h2 { font-size: 1.3em; }
+.message .content h3 { font-size: 1.2em; }
+.message .content h4 { font-size: 1.1em; }

@@ -7,10 +7,10 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/aqerd/andes)
 ![GitHub Repo stars](https://img.shields.io/github/stars/aqerd/andes?style=flat)
 ![GitHub License](https://img.shields.io/github/license/aqerd/andes)
+![Author & Maintainer](https://img.shields.io/badge/Ruslan%20Suleymanov-8A2BE2?style=flat) \
 ![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/:extensionId)
 ![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/extensionId?label=vs%20marketplace%20downloads)
 ![Open VSX Downloads](https://img.shields.io/open-vsx/dt/:namespace/:extension?label=open%20vsx%20downloads)
-![Author & Maintainer](https://img.shields.io/badge/Ruslan%20Suleymanov-8A2BE2)
 
 A VS Code extension that supports Ollama models in UI locally. Not released in VS Code market and Open VSX.
 

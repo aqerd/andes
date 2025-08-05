@@ -339,8 +339,7 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}'; connect-src http://localhost:${this.ollamaPort} http://localhost:${this.golangApiPort};">
-                <meta name="viewport" content="width=device-width,initial-scale=1.0">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link rel="stylesheet" type="text/css" href="${styleUri}">
                 <title>Andes</title>
             </head>
@@ -348,20 +347,19 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
                 <div class="container">
                     <div id="messages" class="messages"></div>
                     <div class="input-area">
-                        <div class="file-suggestions" id="file-suggestions" style="display: none;">
-                            <input type="text" id="file-search" placeholder="Search files..." />
+                        <textarea id="input" class="chat-input" placeholder="Ask a question or type # to select a file..."></textarea>
+                        <div id="file-suggestions" class="file-suggestions" style="display: none;">
+                            <input type="text" id="file-search" placeholder="Search files...">
                             <ul id="file-list"></ul>
                         </div>
-                        <textarea id="input" class="chat-input" placeholder="start typing your prompt here... (use #File:filename for file context)"></textarea>
                         <div class="bottom-controls">
-                            <select id="model-selector" class="model-selector">
-                                <option value="" disabled selected></option>
-                            </select>
-                            <button id="clear" class="activation-button">clear</button>
-                            <button id="send" class="activation-button">enter</button>
+                            <select id="model-selector" class="model-selector"></select>
+                            <button id="clear" class="activation-button">Clear</button>
+                            <button id="send" class="activation-button">Send</button>
                         </div>
                     </div>
                 </div>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
                 <script nonce="${nonce}" src="${scriptUri}"></script>
             </body>
             </html>

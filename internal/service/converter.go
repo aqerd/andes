@@ -2,6 +2,8 @@ package service
 
 import (
 	"bytes"
+	"fmt"
+	"regexp"
 	"strings"
 	"unicode"
 
@@ -36,7 +38,7 @@ func Convert(markdown_text string) string {
 
 			chunkToReplace := textToConvert[startIndex:endOfWhitespace]
 
-			final_think_html := "<details><summary>Thoughts</summary><div class=\"summary-content\">" + content + "</div></details>"
+			final_think_html := "<details><summary>thoughts</summary><div class=\"summary-content\">" + content + "</div></details>"
 
 			textToConvert = strings.Replace(textToConvert, chunkToReplace, final_think_html, 1)
 		} else {
@@ -55,9 +57,24 @@ func Convert(markdown_text string) string {
 	wrapperP_open := "<p>" + "<details>"
 	wrapperP_close := "</details>" + "</p>"
 	if strings.HasPrefix(finalResult, wrapperP_open) && strings.HasSuffix(finalResult, wrapperP_close) {
-		finalResult = strings.TrimPrefix(finalResult, "<p>")
+		finalResult = strings.TrimPrefix("<p>", finalResult)
 		finalResult = strings.TrimSuffix(finalResult, "</p>")
 	}
 
+	finalResult = injectHeaders(finalResult)
+
 	return finalResult
+}
+
+func injectHeaders(html string) string {
+	re := regexp.MustCompile(`(<pre><code class="([^"]*language-([a-zA-Z0-9_+\-]+)[^"]*)">)`)
+	return re.ReplaceAllStringFunc(html, func(match string) string {
+		sub := re.FindStringSubmatch(match)
+		if len(sub) < 4 {
+			return match
+		}
+		lang := sub[3]
+		header := fmt.Sprintf(`<div class="code-block-header"><span class="code-language">%s</span><div class="code-block-actions"><button class="copy">copy</button><button class="apply">apply</button></div></div>`, lang)
+		return header + match
+	})
 }

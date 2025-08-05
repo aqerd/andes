@@ -118,22 +118,46 @@
 
             let processedContent = lastAssistantMessage.content;
 
-            processedContent = processedContent.replace(/<pre><code[^>]*>(.*?)<\/code><\/pre>/gs, (match, code) => {
-                return '\n```\n' + escapeHtml(code.trim()) + '\n```\n';
-            });
+            messageDiv.innerHTML = `<span class="ai-prefix">${model}:</span> ${processedContent}`;
 
-            processedContent = processedContent.replace(/<code[^>]*>(.*?)<\/code>/gs, (match, code) => {
-                return '`' + escapeHtml(code) + '`';
-            });
-
-            processedContent = processedContent.replace(/<[^>]*>/g, '');
-
-            messageDiv.innerHTML = `
-                <span class="ai-prefix">${model}:</span> ${processedContent}
-            `;
             messagesContainer.appendChild(messageDiv);
+
+            const codeBlocks = messageDiv.querySelectorAll('pre > code');
+            codeBlocks.forEach((codeBlock, index) => {
+                const preElement = codeBlock.parentElement;
+                const uniqueId = `code-block-${Date.now()}-${index}`;
+                preElement.id = uniqueId;
+
+                const languageClass = Array.from(codeBlock.classList).find(cls => cls.startsWith('language-'));
+                const language = languageClass ? languageClass.replace('language-', '') : 'plaintext';
+
+                const code = codeBlock.textContent;
+                const header = addCodeBlockHeader(language, code, uniqueId);
+                preElement.insertAdjacentHTML('beforebegin', header);
+            });
+
+            new ClipboardJS('.copy-btn');
+
+            document.querySelectorAll('.diff-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const code = e.currentTarget.dataset.code;
+                    vscode.postMessage({ type: 'applyDiff', diff: code });
+                });
+            });
+
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
+    }
+
+    function addCodeBlockHeader(language, code, uniqueId) {
+        return `
+        <div class="code-block-header">
+            <span>${language}</span>
+            <div class="code-block-actions">
+                <button class="copy-btn" data-clipboard-target="#${uniqueId}">Copy</button>
+                <button class="diff-btn" data-code="${escapeHtml(code)}">Apply as Diff</button>
+            </div>
+        </div>`;
     }
 
     sendButton.addEventListener('click', sendMessage);

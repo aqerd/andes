@@ -1,12 +1,17 @@
 # Changelog
 
-### Current: 0.5
+### Current: 0.6
 All notable changes for Andes will be documented in this file.
 Versions lower than `1.0` are beta versions.
 Note that I don't believe in patches and `0.1` is equal to `0.1.0` and all patches should be zero.
 All dates are in `DD.MM.YYYY` format.
 
-## 0.5 (current, 09.08.2025, [#14](https://github.com/aqerd/andes/pull/14))
+## 0.6 (current, 09.08.2025, [#19](https://github.com/aqerd/andes/pull/19) & [#20](https://github.com/aqerd/andes/pull/20))
+- Code working and analyze (copying);
+- Style code blocks in CSS;
+- Code highlighting.
+
+## 0.5 (09.08.2025, [#14](https://github.com/aqerd/andes/pull/14))
 - Code working and analyze (copying);
 - Style code blocks in CSS;
 - Code highlighting.

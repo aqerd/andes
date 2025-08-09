@@ -103,7 +103,7 @@
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message user-message';
         messageDiv.innerHTML = `
-            <span class="user-prefix">You:</span> ${escapeHtml(content)}
+            <span class="user-prefix">you >>> </span> ${escapeHtml(content)}
         `;
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -118,7 +118,7 @@
 
             let processedContent = lastAssistantMessage.content;
 
-            messageDiv.innerHTML = `<span class="ai-prefix">${model}:</span> ${processedContent}`;
+            messageDiv.innerHTML = `<span class="ai-prefix">${model} >>> </span> ${processedContent}`;
 
             messagesContainer.appendChild(messageDiv);
 
@@ -268,7 +268,7 @@
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message user-message';
         messageDiv.innerHTML = `
-            <div class="user-prefix">You:</div>
+            <div class="user-prefix">you >>> </div>
             <div class="content">${escapeHtml(content)}</div>
         `;
         messagesContainer.appendChild(messageDiv);
@@ -283,7 +283,7 @@
             messageDiv.className = 'message ai-message';
 
             messageDiv.innerHTML = `
-                <div class="ai-prefix">${model}:</div>
+                <div class="ai-prefix">${model} >>> </div>
                 <div class="content">${lastAssistantMessage.content}</div>
             `;
             messagesContainer.appendChild(messageDiv);
@@ -301,7 +301,7 @@
         errorDiv.className = 'message error';
         errorDiv.innerHTML = `
             <div class="error-content">
-                <strong>Error:</strong> ${escapeHtml(String(errorMessage))}
+                <strong>error >>> </strong> ${escapeHtml(String(errorMessage))}
             </div>
         `;
         messagesContainer.appendChild(errorDiv);

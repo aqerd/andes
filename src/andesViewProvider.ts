@@ -354,8 +354,8 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
                         </div>
                         <div class="bottom-controls">
                             <select id="model-selector" class="model-selector"></select>
-                            <button id="clear" class="activation-button">Clear</button>
-                            <button id="send" class="activation-button">Send</button>
+                            <button id="clear" class="activation-button">clear</button>
+                            <button id="send" class="activation-button">send</button>
                         </div>
                     </div>
                 </div>

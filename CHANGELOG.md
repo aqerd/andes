@@ -6,10 +6,10 @@ Versions lower than `1.0` are beta versions.
 Note that I don't believe in patches and `0.1` is equal to `0.1.0` and all patches should be zero.
 All dates are in `DD.MM.YYYY` format.
 
-## 0.5 (current, 05.08.2025)
-- Code working and analyze (file linking, diffs, etc);
+## 0.5 (current, 09.08.2025, [#14](https://github.com/aqerd/andes/pull/14))
+- Code working and analyze (copying);
 - Style code blocks in CSS;
-- Containerization.
+- Code highlighting.
 
 ## 0.4 (02.08.2025, [#12](https://github.com/aqerd/andes/pull/12))
 - Chat generation and memory;

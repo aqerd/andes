@@ -11,7 +11,6 @@
     const fileList = document.getElementById('file-list');
 
     let recentFiles = [];
-    // let showFileSuggestions = false;
 
     vscode.postMessage({ type: 'getRecentFiles' });
 
@@ -166,11 +165,6 @@
         });
     }
 
-    // function displayUserMessage(content) {
-    //     addMessageToUI('user', escapeHtml(content));
-    //     input.focus();
-    // }
-
     function displayMessage(chatHistory, model) {
         const lastAssistantMessage = chatHistory.filter(msg => msg.role === 'assistant').pop();
         if (lastAssistantMessage) {
@@ -179,16 +173,10 @@
         input.focus();
     }
 
-    // function addCodeBlockHeader(language, code, uniqueId) {
-    //     return `
-    //     <div class="code-block-header">
-    //         <span class="code-language">${language}</span>
-    //         <div class="code-block-actions">
-    //             <button class="copy-btn" data-clipboard-target="#${uniqueId}">copy</button>
-    //             <button class="diff-btn" data-code="${escapeHtml(code)}">apply</button>
-    //         </div>
-    //     </div>`;
-    // }
+    function displayMessage(messageContent, model) {
+        addMessageToUI('assistant', messageContent, model);
+        input.focus();
+    }
 
     sendButton.addEventListener('click', sendMessage);
     input.addEventListener('keydown', (e) => {
@@ -237,7 +225,7 @@
                 
             case 'result':
                 if (message.ok) {
-                    displayMessage(message.chatHistory, message.model);
+                    displayMessage(message.message, message.model);
                 } else {
                     displayError(message.error);
                 }

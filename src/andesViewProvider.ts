@@ -3,11 +3,6 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { OllamaApiClient } from './ollamaApiClient';
 
-// interface FileContext {
-//     path: string;
-//     content: string;
-// }
-
 interface DiffChange {
     type: 'add' | 'remove' | 'change';
     lineNumber: number;
@@ -132,7 +127,7 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
             this._view.webview.postMessage({ 
                 type: 'result', 
                 ok: true, 
-                chatHistory, 
+                message: lastMessage.content, // Отправляем только содержимое последнего сообщения
                 model: message.model 
             });
         } catch (err: any) {
@@ -370,7 +365,7 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
                 <div class="container">
                     <div id="messages" class="messages"></div>
                     <div class="input-area">
-                        <textarea id="input" class="chat-input" placeholder="Ask a question or type # to select a file..."></textarea>
+                        <textarea id="input" class="chat-input" placeholder="ask a question or type..."></textarea>
                         <div id="file-suggestions" class="file-suggestions" style="display: none;">
                             <input type="text" id="file-search" placeholder="Search files...">
                             <ul id="file-list"></ul>

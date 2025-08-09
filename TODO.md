@@ -8,7 +8,11 @@ All new issues, possible features and bugfixes for Andes will be documented in t
 - [ ] File linking in textarea ([#7](https://github.com/aqerd/andes/issues/7));
 - [ ] Add support for more API endpoints ([#8](https://github.com/aqerd/andes/issues/8));
 - [ ] Deploy on VS Code marketplace ([#10](https://github.com/aqerd/andes/issues/10));
-- [ ] Live Streaming ([#13](https://github.com/aqerd/andes/issues/13)).
+- [ ] Live Streaming ([#13](https://github.com/aqerd/andes/issues/13));
+- [ ] Diffs in code blocks are not working properly ([#15](https://github.com/aqerd/andes/issues/15));
+- [ ] Memory saving is not working properly ([#16](https://github.com/aqerd/andes/issues/16));
+- [ ] Webview is reseting after switching between plugins or closing sidebar ([#17](https://github.com/aqerd/andes/issues/17)).
 
 ## Done
-- [x] Markdown parsing from generated text (Issue: [#4](https://github.com/aqerd/andes/issues/4), PR: [#11](https://github.com/aqerd/andes/pull/11)).
+- [x] Markdown parsing from generated text (Issue: [#4](https://github.com/aqerd/andes/issues/4), PR: [#11](https://github.com/aqerd/andes/pull/11));
+- [x] Code highlighting (Issue: [#18](https://github.com/aqerd/andes/issues/18), PR: [#14](https://github.com/aqerd/andes/pull/14)).

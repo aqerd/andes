@@ -2,10 +2,8 @@ package service
 
 import (
 	"bytes"
-	"fmt"
 	"strings"
 	"unicode"
-	"time"
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
@@ -68,8 +66,4 @@ func Convert(markdown_text string) string {
 
 func injectHeaders(html string) string {
 	return html
-}
-
-func generateUniqueId() string {
-    return fmt.Sprintf("%d", time.Now().UnixNano())
 }

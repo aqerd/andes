@@ -3,7 +3,19 @@
     <img src="./media/marketicon.png" width="64" height="64"/>
 </p>
 
-A VS Code extension that supports Ollama models in UI locally.
+![Current Version](https://img.shields.io/github/package-json/v/aqerd/andes?color=370A0A&labelColor=AC3838)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/t/aqerd/andes?color=370A0A&labelColor=AC3838)
+![GitHub Repo stars](https://img.shields.io/github/stars/aqerd/andes?style=flat&color=370A0A&labelColor=AC3838)
+![GitHub License](https://img.shields.io/github/license/aqerd/andes?color=370A0A&labelColor=AC3838)
+![Author & Maintainer](https://img.shields.io/badge/Author%20%26%20Maintainer-Ruslan%20Suleymanov-370A0A?style=flat&labelColor=AC3838) \
+![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/:extensionId?color=370A0A&labelColor=AC3838)
+![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/:extensionId?label=vs%20marketplace%20downloads&color=370A0A&labelColor=AC3838)
+![Open VSX Downloads](https://img.shields.io/open-vsx/dt/:namespace/:extension?label=open%20vsx%20downloads&color=370A0A&labelColor=AC3838)
+
+A VS Code extension that supports Ollama models in UI locally. Not released in VS Code market and Open VSX.
+
+## Requirements
+Node.js, Golang, VS Code (Cursor, Windsurf and Trae doesn't work somehow), make and Ollama.
 
 ## How to build
 Set environment variables in `.env` file, copying params from `.env.example` file.
@@ -12,41 +24,24 @@ Before testing make sure you have `code` installed in your PATH.
 - Press `CMD + Shift + P` and search for `Shell Command: Install 'code' command in PATH`;
 - Restart VS Code.
 
-And you ready for extension testing:
+And you are ready for extension testing:
 - First, run `make` in Terminal. It will instal necessary dependencies;
 - Go to `Run` -> `Start Debugging` (or just Press `F5`)
 - Wait until the new VS Code window will appear (Extension Development Host);
 - Press `CMD + Shift + P` and search for `Andes`;
-- Make sure ollama is serving: run `ollama serve` in Terminal on port 11434.
+- Make sure ollama is serving: run `ollama serve` in Terminal on port `11434`.
 
 ## Features
-- View list of your local Ollama models
-- Generate some text
+- Manage your installed Ollama models locally;
+- Chat with AI;
+- Observe the reasoning process and decision-making of AI models.
 
-## Requirements
-Node.js, VS Code (Cursor, Windsurf and Trae doesn't work) and Ollama
+## Changelog
+Visit [CHANGELOG.md](./CHANGELOG.md).
 
 ## TODO
-- Add support for more API endpoints in this plugin (delete, install models)
-- Add support for models with images
-- Add support for custom models
-- File linking in textarea
+Visit [TODO.md](./TODO.md).
 
 ## About project
-Sadly it's written in TypeScript
-
-<!-- 
-## Extension Settings
-
-## Known Issues
-
-## Release Notes
-
-## Following extension guidelines
-
-## Working with Markdown
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/) -->
+I created Andes to provide a simple, authentication-free VS Code extension that works exclusively with Ollama models in VSC, Windsurf, Trae, Cursor and other VSC forks. While other excellent plugins like Cline & Continue support multiple AI providers, I wanted a focused solution specifically for local Ollama integration.
+Info: Sadly it's written in TypeScript, but API is in Golang.

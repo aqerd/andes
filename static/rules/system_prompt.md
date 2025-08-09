@@ -529,24 +529,3 @@ dependencies: string[],
 }) => any;
 
 } // namespace functions
-
-## multi_tool_use
-
-// This tool serves as a wrapper for utilizing multiple tools. Each tool that can be used must be specified in the tool sections. Only tools in the functions namespace are permitted.
-// Ensure that the parameters provided to each tool are valid according to the tool's specification.
-namespace multi_tool_use {
-
-// Use this function to run multiple tools simultaneously, but only if they can operate in parallel. Do this even if the prompt suggests using the tools sequentially.
-type parallel = (_: {
-// The tools to be executed in parallel. NOTE: only functions tools are permitted
-tool_uses: {
-// The name of the tool to use. The format should either be just the name of the tool, or in the format namespace.function_name for plugin and function tools.
-recipient_name: string,
-// The parameters to pass to the tool. Ensure these are valid according to the tool's own specifications.
-parameters: object,
-}[],
-}) => any;
-
-} // namespace multi_tool_use
-
-</code>

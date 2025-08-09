@@ -3,9 +3,9 @@ package service
 import (
 	"bytes"
 	"fmt"
-	"regexp"
 	"strings"
 	"unicode"
+	"time"
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
@@ -67,14 +67,9 @@ func Convert(markdown_text string) string {
 }
 
 func injectHeaders(html string) string {
-    re := regexp.MustCompile(`(<pre><code class="([^\"]*language-([a-zA-Z0-9_+\-]+)[^\"]*)">)`) 
-    return re.ReplaceAllStringFunc(html, func(match string) string {
-        sub := re.FindStringSubmatch(match)
-        if len(sub) < 4 {
-            return match
-        }
-        lang := sub[3]
-        header := fmt.Sprintf(`<div class="code-block-header"><span class="code-language">%s</span><div class="code-block-actions"><button class="copy">copy</button><button class="apply">apply</button></div></div>`, lang)
-        return header + match
-    })
+	return html
+}
+
+func generateUniqueId() string {
+    return fmt.Sprintf("%d", time.Now().UnixNano())
 }

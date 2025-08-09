@@ -11,7 +11,7 @@
     const fileList = document.getElementById('file-list');
 
     let recentFiles = [];
-    let showFileSuggestions = false;
+    // let showFileSuggestions = false;
 
     vscode.postMessage({ type: 'getRecentFiles' });
 
@@ -87,7 +87,7 @@
         
         if (!prompt || !model) return;
         
-        displayUserMessage(prompt);
+        addMessageToUI('user', prompt);
         
         vscode.postMessage({
             type: 'chat',
@@ -97,68 +97,98 @@
         
         input.value = '';
         hideFileSuggestions();
+        input.focus();
     }
 
-    function displayUserMessage(content) {
+    function addMessageToUI(role, content, model) {
         const messageDiv = document.createElement('div');
-        messageDiv.className = 'message user-message';
-        messageDiv.innerHTML = `
-            <span class="user-prefix">you >>> </span> ${escapeHtml(content)}
-        `;
+        messageDiv.className = `message ${role}-message`;
+    
+        let prefix = '';
+        if (role === 'user') {
+            prefix = `<span class="user-prefix">you >>> </span>`;
+        } else if (role === 'assistant') {
+            prefix = `<span class="ai-prefix">${model} >>> </span>`;
+        }
+    
+        messageDiv.innerHTML = `${prefix}${content}`;
         messagesContainer.appendChild(messageDiv);
+    
+        if (role === 'assistant') {
+            processCodeBlocks(messageDiv);
+        }
+    
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
+    function processCodeBlocks(element) {
+        const codeBlocks = element.querySelectorAll('pre > code');
+        codeBlocks.forEach((codeBlock, index) => {
+            const preElement = codeBlock.parentElement;
+            const uniqueId = `code-block-${Date.now()}-${index}`;
+            preElement.id = uniqueId;
+
+            const languageClass = Array.from(codeBlock.classList).find(cls => cls.startsWith('language-'));
+            const language = languageClass ? languageClass.replace('language-', '') : 'plaintext';
+
+            const code = codeBlock.textContent;
+            
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'code-block-header';
+            headerDiv.innerHTML = `
+                <span class="code-language">${language}</span>
+                <div class="code-block-actions">
+                    <button class="copy-btn" data-clipboard-target="#${uniqueId}">copy</button>
+                    <button class="diff-btn" data-code="${escapeHtml(code)}">apply</button>
+                </div>
+            `;
+
+            const wrapperDiv = document.createElement('div');
+            wrapperDiv.className = 'code-block-container';
+            wrapperDiv.appendChild(headerDiv);
+            wrapperDiv.appendChild(preElement.cloneNode(true));
+
+            preElement.parentNode.replaceChild(wrapperDiv, preElement);
+        });
+
+        element.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block);
+        });
+
+        new ClipboardJS('.copy-btn');
+
+        document.querySelectorAll('.diff-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const code = e.currentTarget.dataset.code;
+                const filePath = e.currentTarget.dataset.filepath;
+                vscode.postMessage({ type: 'applyDiff', diff: code, filePath: filePath });
+            });
+        });
+    }
+
+    // function displayUserMessage(content) {
+    //     addMessageToUI('user', escapeHtml(content));
+    //     input.focus();
+    // }
+
     function displayMessage(chatHistory, model) {
         const lastAssistantMessage = chatHistory.filter(msg => msg.role === 'assistant').pop();
-
         if (lastAssistantMessage) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message ai-message';
-
-            let processedContent = lastAssistantMessage.content;
-
-            messageDiv.innerHTML = `<span class="ai-prefix">${model} >>> </span> ${processedContent}`;
-
-            messagesContainer.appendChild(messageDiv);
-
-            const codeBlocks = messageDiv.querySelectorAll('pre > code');
-            codeBlocks.forEach((codeBlock, index) => {
-                const preElement = codeBlock.parentElement;
-                const uniqueId = `code-block-${Date.now()}-${index}`;
-                preElement.id = uniqueId;
-
-                const languageClass = Array.from(codeBlock.classList).find(cls => cls.startsWith('language-'));
-                const language = languageClass ? languageClass.replace('language-', '') : 'plaintext';
-
-                const code = codeBlock.textContent;
-                const header = addCodeBlockHeader(language, code, uniqueId);
-                preElement.insertAdjacentHTML('beforebegin', header);
-            });
-
-            new ClipboardJS('.copy-btn');
-
-            document.querySelectorAll('.diff-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const code = e.currentTarget.dataset.code;
-                    vscode.postMessage({ type: 'applyDiff', diff: code });
-                });
-            });
-
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            addMessageToUI('assistant', lastAssistantMessage.content, model);
         }
+        input.focus();
     }
 
-    function addCodeBlockHeader(language, code, uniqueId) {
-        return `
-        <div class="code-block-header">
-            <span>${language}</span>
-            <div class="code-block-actions">
-                <button class="copy-btn" data-clipboard-target="#${uniqueId}">Copy</button>
-                <button class="diff-btn" data-code="${escapeHtml(code)}">Apply as Diff</button>
-            </div>
-        </div>`;
-    }
+    // function addCodeBlockHeader(language, code, uniqueId) {
+    //     return `
+    //     <div class="code-block-header">
+    //         <span class="code-language">${language}</span>
+    //         <div class="code-block-actions">
+    //             <button class="copy-btn" data-clipboard-target="#${uniqueId}">copy</button>
+    //             <button class="diff-btn" data-code="${escapeHtml(code)}">apply</button>
+    //         </div>
+    //     </div>`;
+    // }
 
     sendButton.addEventListener('click', sendMessage);
     input.addEventListener('keydown', (e) => {
@@ -190,6 +220,16 @@
                 break;
             case 'searchResults':
                 displayFiles(message.files);
+                break;
+            case 'restore':
+                messagesContainer.innerHTML = '';
+                message.chatHistory.forEach(msg => {
+                    if (msg.role === 'user') {
+                        addMessageToUI('user', escapeHtml(msg.content));
+                    } else if (msg.role === 'assistant') {
+                        addMessageToUI('assistant', msg.content, message.model);
+                    }
+                });
                 break;
             case 'diffDetected':
                 showDiffApplyDialog(message.diff, message.filePath);
@@ -244,56 +284,20 @@
     };
     
     function escapeHtml(text) {
+        if (typeof text !== 'string') {
+            return '';
+        }
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
 
-    function displayMessage(chatHistory, model) {
-        const lastAssistantMessage = chatHistory.filter(msg => msg.role === 'assistant').pop();
-
-        if (lastAssistantMessage) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message ai-message';
-            messageDiv.innerHTML = `
-                <div class="ai-prefix">${model}:</div>
-                <div class="content">${escapeHtml(lastAssistantMessage.content)}</div>
-            `;
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-    }
-
-    function displayUserMessage(content) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message user-message';
-        messageDiv.innerHTML = `
-            <div class="user-prefix">you >>> </div>
-            <div class="content">${escapeHtml(content)}</div>
-        `;
-        messagesContainer.appendChild(messageDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-
-    function displayMessage(chatHistory, model) {
-        const lastAssistantMessage = chatHistory.filter(msg => msg.role === 'assistant').pop();
-
-        if (lastAssistantMessage) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message ai-message';
-
-            messageDiv.innerHTML = `
-                <div class="ai-prefix">${model} >>> </div>
-                <div class="content">${lastAssistantMessage.content}</div>
-            `;
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-    }
-
     function updateLoadingState(isLoading) {
         sendButton.disabled = isLoading;
-        input.disabled = isLoading;
+        input.disabled = false;
+        if (!isLoading) {
+            input.focus();
+        }
     }
 
     function displayError(errorMessage) {

@@ -3,10 +3,10 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { OllamaApiClient } from './ollamaApiClient';
 
-interface FileContext {
-    path: string;
-    content: string;
-}
+// interface FileContext {
+//     path: string;
+//     content: string;
+// }
 
 interface DiffChange {
     type: 'add' | 'remove' | 'change';
@@ -56,6 +56,11 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
 
         this.loadModels();
 
+        const chatHistory = this.apiClient.getChatHistory();
+        if (chatHistory.length > 0) {
+            this._view.webview.postMessage({ type: 'restore', chatHistory: chatHistory, model: 'ollama' });
+        }
+
         webviewView.onDidChangeVisibility(() => {
             if (webviewView.visible) {
                 this.loadModels();
@@ -104,15 +109,12 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
 
     private async handleChatMessage(message: any) {
         if (!this._view) return;
-    
         try {
             this._view.webview.postMessage({ type: 'loading', isLoading: true });
-            
             const processedPrompt = await this.processFileContext(message.prompt);
-            
             const chatHistory = await this.apiClient.chat(processedPrompt, message.model);
-            
             const lastMessage = chatHistory[chatHistory.length - 1];
+
             if (lastMessage && lastMessage.content) {
                 const diffMatch = lastMessage.content.match(/```diff\n([\s\S]*?)\n```/);
                 if (diffMatch) {
@@ -193,9 +195,6 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
             if (fs.existsSync(fullPath)) {
                 return fullPath;
             }
-        }
-
-        for (const folder of workspaceFolders) {
             const files = await vscode.workspace.findFiles(`**/${fileName}`, '**/node_modules/**', 1);
             if (files.length > 0) {
                 return files[0].fsPath;
@@ -253,54 +252,69 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
         return files.map(uri => path.basename(uri.fsPath));
     }
 
-    private async handleApplyDiff(diffContent: string, filePath: string) {
+    private async handleApplyDiff(diffContent: string, filePath?: string) {
         try {
-            if (!fs.existsSync(filePath)) {
-                vscode.window.showErrorMessage(`File not found: ${filePath}`);
+            let targetPath = filePath;
+            if (!targetPath) {
+                const activeEditor = vscode.window.activeTextEditor;
+                if (activeEditor) {
+                    targetPath = activeEditor.document.uri.fsPath;
+                }
+            }
+
+            if (!targetPath) {
+                vscode.window.showErrorMessage('No file path provided and no active editor.');
                 return;
             }
 
-            const document = await vscode.workspace.openTextDocument(filePath);
+            if (!fs.existsSync(targetPath)) {
+                vscode.window.showErrorMessage(`File not found: ${targetPath}`);
+                return;
+            }
+
+            const document = await vscode.workspace.openTextDocument(targetPath);
             const editor = await vscode.window.showTextDocument(document);
 
             const changes = this.parseDiff(diffContent);
             await this.applyChanges(editor, changes);
 
             vscode.window.showInformationMessage('Changes applied successfully!');
-        } catch (error) {
-            vscode.window.showErrorMessage(`Failed to apply changes: ${error}`);
+        } catch (error: any) {
+            vscode.window.showErrorMessage(`Failed to apply changes: ${error.message}`);
         }
     }
 
     private parseDiff(diffContent: string): DiffChange[] {
         const lines = diffContent.split('\n');
         const changes: DiffChange[] = [];
-        let currentLine = 0;
+        let originalLine = 0;
+        let insertionLine = 0;
 
         for (const line of lines) {
             if (line.startsWith('@@')) {
                 const match = line.match(/@@ -(\d+),?\d* \+(\d+),?\d* @@/);
                 if (match) {
-                    currentLine = parseInt(match[2]) - 1;
+                    originalLine = parseInt(match[1]) - 1;
+                    insertionLine = originalLine;
                 }
             } else if (line.startsWith('+')) {
                 changes.push({
                     type: 'add',
-                    lineNumber: currentLine,
+                    lineNumber: insertionLine,
                     content: line.substring(1)
                 });
-                currentLine++;
             } else if (line.startsWith('-')) {
                 changes.push({
                     type: 'remove',
-                    lineNumber: currentLine,
+                    lineNumber: originalLine,
                     content: line.substring(1)
                 });
-            } else if (!line.startsWith('\\')) {
-                currentLine++;
+                originalLine++;
+            } else if (line.startsWith(' ')) {
+                originalLine++;
+                insertionLine = originalLine;
             }
         }
-
         return changes;
     }
 
@@ -308,20 +322,28 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
         const edit = new vscode.WorkspaceEdit();
         const document = editor.document;
 
-        const sortedChanges = [...changes].sort((a, b) => b.lineNumber - a.lineNumber);
+        const sortedChanges = [...changes].sort((a, b) => {
+            if (a.lineNumber !== b.lineNumber) {
+                return b.lineNumber - a.lineNumber;
+            }
+            if (a.type === 'remove' && b.type === 'add') {
+                return -1;
+            }
+            if (a.type === 'add' && b.type === 'remove') {
+                return 1;
+            }
+            return 0;
+        });
 
         for (const change of sortedChanges) {
-            const position = new vscode.Position(change.lineNumber, 0);
-            
-            switch (change.type) {
-                case 'add':
-                    edit.insert(document.uri, position, change.content + '\n');
-                    break;
-                case 'remove':
-                    const lineLength = document.lineAt(change.lineNumber).text.length;
-                    const range = new vscode.Range(change.lineNumber, 0, change.lineNumber, lineLength);
-                    edit.delete(document.uri, range);
-                    break;
+            if (change.type === 'add') {
+                const position = new vscode.Position(change.lineNumber, 0);
+                edit.insert(document.uri, position, change.content + '\n');
+            } else if (change.type === 'remove') {
+                if (change.lineNumber < document.lineCount) {
+                    const line = document.lineAt(change.lineNumber);
+                    edit.delete(document.uri, line.rangeIncludingLineBreak);
+                }
             }
         }
 
@@ -331,7 +353,7 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
     private getHtmlForWebview(webview: vscode.Webview): string {
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'static', 'scripts', 'webview.js'));
         const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'static', 'styles', 'webview.css'));
-        
+        const highlightStyleUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'static', 'styles', 'highlight.css'));
         const nonce = getNonce();
 
         return `
@@ -341,6 +363,7 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link rel="stylesheet" type="text/css" href="${styleUri}">
+                <link rel="stylesheet" type="text/css" href="${highlightStyleUri}">
                 <title>Andes</title>
             </head>
             <body>
@@ -359,6 +382,7 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
                         </div>
                     </div>
                 </div>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
                 <script nonce="${nonce}" src="${scriptUri}"></script>
             </body>

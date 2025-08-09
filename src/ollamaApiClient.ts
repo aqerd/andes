@@ -180,8 +180,9 @@ export class OllamaApiClient {
 
     public clearChatHistory(): void {
         this.chatHistory = [];
-        if (this.systemPrompt) {
-            this.chatHistory.push({ role: 'system', content: this.systemPrompt });
-        }
+    }
+
+    public getChatHistory() {
+        return this.chatHistory;
     }
 }

@@ -14,7 +14,7 @@ All dates are in `DD.MM.YYYY` format.
 
 ## 0.7 (18.08.2025, [#21](https://github.com/aqerd/andes/pull/21))
 - Docs rewritten;
-- Plugin published in Open-VSX and Visual Studio Marketplace.
+- Plugin published in Open VSX and Visual Studio Marketplace.
 
 ## 0.6 (09.08.2025, [#19](https://github.com/aqerd/andes/pull/19) & [#20](https://github.com/aqerd/andes/pull/20))
 - Code working and analyze (copying);

@@ -1,12 +1,15 @@
 # Changelog
 
-### Current: 0.7
+### Current: 0.8
 All notable changes for Andes will be documented in this file.
 Versions lower than `1.0` are beta versions.
 Note that I don't believe in patches and `0.1` is equal to `0.1.0` and all patches should be zero.
 All dates are in `DD.MM.YYYY` format.
 
-## 0.7 (current, 18.08.2025, [#21](https://github.com/aqerd/andes/pull/21))
+## 0.8 (current, 18.08.2025, [#22](https://github.com/aqerd/andes/pull/22))
+- Renamed extension name.
+
+## 0.7 (17.08.2025, [#21](https://github.com/aqerd/andes/pull/21))
 - Docs rewritten;
 - Plugin published in Open-VSX and Visual Studio Marketplace.
 

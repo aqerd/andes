@@ -17,6 +17,8 @@ A Visual Studio Code (or Cursor, Windsurf etc) extension that provides a local U
 
 This project is no longer actively maintained and may contain bugs. I recommend using [Cline](https://github.com/cline/cline) instead.
 
+Install it on [VS Marketplace](https://marketplace.visualstudio.com/items?itemName=aqerd.andes-rs) or [Open VSX](https://open-vsx.org/extension/aqerd/andes-rs)
+
 ## Requirements
 Node.js, Golang, VS Code (Cursor, Windsurf and Trae doesn't work somehow), make and Ollama.
 

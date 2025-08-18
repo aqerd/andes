@@ -1,5 +1,5 @@
 {
-  "name": "andes_rs",
+  "name": "andes-rs",
   "displayName": "Andes",
   "description": "Run local Ollama models in UI",
   "version": "0.7.0",

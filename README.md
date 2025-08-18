@@ -8,12 +8,14 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/aqerd/andes?style=flat&color=370A0A&labelColor=AC3838)
 ![GitHub License](https://img.shields.io/github/license/aqerd/andes?color=370A0A&labelColor=AC3838)
 ![Author & Maintainer](https://img.shields.io/badge/author%20%26%20maintainer-Ruslan%20Suleymanov-370A0A?style=flat&labelColor=AC3838) \
-![Open VSX Downloads](https://img.shields.io/open-vsx/dt/aqerd/andes?label=open%20vsx%20downloads&color=370A0A&labelColor=AC3838)
-![Open VSX Release Date](https://img.shields.io/open-vsx/release-date/aqerd/andes?color=370A0A&labelColor=AC3838)
-<!-- ![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/:extensionId?color=370A0A&labelColor=AC3838)
-![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/:extensionId?label=vs%20marketplace%20downloads&color=370A0A&labelColor=AC3838) -->
+![Open VSX Release Date](https://img.shields.io/open-vsx/release-date/aqerd/andes_rs?color=370A0A&labelColor=AC3838)
+![Open VSX Downloads](https://img.shields.io/open-vsx/dt/aqerd/andes_rs?label=open%20vsx%20downloads&color=370A0A&labelColor=AC3838)
+![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/aqerd.andes_rs?label=vs%20marketplace%20downloads&color=370A0A&labelColor=AC3838)
+<!-- ![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/aqerd.andes_rs?color=370A0A&labelColor=AC3838) -->
 
-A VS Code extension that supports Ollama models in UI locally. Not released in VS Code market and Open VSX.
+A Visual Studio Code (or Cursor, Windsurf etc) extension that provides a local UI interface for Ollama models. 
+
+This project is no longer actively maintained and may contain bugs. I recommend using [Cline](https://github.com/cline/cline) instead.
 
 ## Requirements
 Node.js, Golang, VS Code (Cursor, Windsurf and Trae doesn't work somehow), make and Ollama.
@@ -44,5 +46,6 @@ Visit [CHANGELOG.md](./CHANGELOG.md).
 Visit [TODO.md](./TODO.md).
 
 ## About project
-I created Andes to provide a simple, authentication-free VS Code extension that works exclusively with Ollama models in VSC, Windsurf, Trae, Cursor and other VSC forks. While other excellent plugins like Cline & Continue support multiple AI providers, I wanted a focused solution specifically for local Ollama integration.
-Info: Sadly it's written in TypeScript, but API is in Golang.
+I created Andes to provide a simple, authentication-free VS Code extension that works exclusively with Ollama models in VSC, Windsurf, Trae, Cursor and other VSC forks. While other plugins like Cline & Continue support multiple AI providers with authentication needed, I wanted a focused solution specifically for local Ollama models.
+
+Sadly it's written in TypeScript, but API for Markdown-to-HTML formating is in Golang. Initially i wanted to write this project in Golang, but it's simplier to write it in TypeScript since i can request Ollama's endpoints directly from TypeScript.

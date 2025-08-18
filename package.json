@@ -1,8 +1,8 @@
 {
-  "name": "andes",
+  "name": "andes_rs",
   "displayName": "Andes",
   "description": "Run local Ollama models in UI",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "publisher": "aqerd",
   "icon": "./media/marketicon.png",
   "repository": "https://github.com/aqerd/andes",

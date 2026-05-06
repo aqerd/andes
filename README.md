@@ -10,8 +10,7 @@
 ![Author & Maintainer](https://img.shields.io/badge/author%20%26%20maintainer-Ruslan%20Suleymanov-370A0A?style=flat&labelColor=AC3838) \
 ![Open VSX Release Date](https://img.shields.io/open-vsx/release-date/aqerd/andes-rs?color=370A0A&labelColor=AC3838)
 ![Open VSX Downloads](https://img.shields.io/open-vsx/dt/aqerd/andes-rs?label=open%20vsx%20downloads&color=370A0A&labelColor=AC3838)
-![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/aqerd.andes-rs?label=vs%20marketplace%20downloads&color=370A0A&labelColor=AC3838)
-<!-- ![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/aqerd.andes-rs?color=370A0A&labelColor=AC3838) -->
+![Visual Studio Marketplace Downloads](https://vsmarketplacebadges.dev/downloads/aqerd.andes-rs.svg?color=370A0A&labelColor=AC3838)
 
 A Visual Studio Code (or Cursor, Windsurf etc) extension that provides a local UI interface for Ollama models. 
 

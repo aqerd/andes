@@ -42,7 +42,8 @@ export class AndesViewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.options = {
             enableScripts: true,
-            localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'static')]
+            localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'static')],
+            retainContextWhenHidden: true
         };
 
         webviewView.webview.html = this.getHtmlForWebview(webviewView.webview);
